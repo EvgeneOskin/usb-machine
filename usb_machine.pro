@@ -1,9 +1,12 @@
 TEMPLATE = app
-CONFIG            += qt warn_on opengl thread zlib
+TARGET = usb_machine
+CONFIG            += qt warn_on thread opengl warn_on
 QT                += widgets core opengl
 
 MOC_DIR           = tmp
 OBJECTS_DIR       = tmp
+
+DEPENDPATH += qwtplot3d
 
 HEADERS = mainwindow.h \
     mainwidget.h \
@@ -12,6 +15,7 @@ HEADERS = mainwindow.h \
     mainoptions.h \
     machineoptions.h \
     codehighlighter.h \
+    jenia.h \
     compilator.h \
     DEF.h \
     Parser.h \
@@ -23,7 +27,6 @@ HEADERS = mainwindow.h \
     instrumentwidget.h \
     searchwidget.h \
     usbtool.h \
-    jenia.h \
     track.h
 
 SOURCES = main.cpp \
@@ -34,6 +37,7 @@ SOURCES = main.cpp \
     mainoptions.cpp \
     machineoptions.cpp \
     codehighlighter.cpp \
+    jenia.cpp \
     compilator.cpp \
     func.cpp \
     lex.yy.cpp \
@@ -45,27 +49,22 @@ SOURCES = main.cpp \
     modeling.cpp \
     searchwidget.cpp \
     usbtool.cpp \
-    jenia.cpp \
     track.cpp
 
 INSTALLS += target
 
-QMAKE_CXXFLAGS_RELEASE += -O3
-
-LIBS += -L"C:/Program Files (x86)/GnuWin32/lib" -lfl \
-#    static/lib/qwtplot3d.dll \
-    -lusb-1.0
-
-#INCLUDEPATH += static/include
-
-LIBS +=  -lqwtplot3d \
-    -lalglib
+#QMAKE_CXXFLAGS_RELEASE += -O3
 
 
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/static/lib/ \
-    -lqwtplot3d -lalglib
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/static/lib/ \
-    -lqwtplot3d -lalglib
+win32 {
+    LIBS += -L$$PWD/static/lib/ -lusb-1.0
+    LIBS += -L"C:/Program Files (x86)/GnuWin32/lib" -lfl
+} else {
+    LIBS += -lusb-1.0
+    LIBS += -lfl
+}
+LIBS += -L$$PWD/qwtplot3d/lib/ -lqwtplot3d
 
+INCLUDEPATH += $$PWD/qwtplot3d/include/
 INCLUDEPATH += $$PWD/static/include
-DEPENDPATH += $$PWD/static/include
+

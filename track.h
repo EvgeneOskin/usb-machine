@@ -3,6 +3,7 @@
 
 #include "qwt3d_parametricsurface.h"
 #include "parsertypes.h"
+#include <QString>
 
 class Track : public Qwt3D::ParametricSurface {
 
@@ -23,6 +24,7 @@ private:
     std::string x1;
     std::string y1;
     std::string z1;
+
 signals:
 
 public slots:

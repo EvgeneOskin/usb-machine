@@ -311,7 +311,6 @@ bool MainWindow::saveDocument(QTextDocument *doc, const QString * path){
     //setCurrentFile(*path);
     statusBar()->showMessage(tr("Файл сохранен в ") + *path, 2000);
     return true;
-
 }
 
 void MainWindow::bindCurrentText(int i){

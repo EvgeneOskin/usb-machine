@@ -1,5 +1,4 @@
 #include "track.h"
-#include "interpolation.h"
 
 Track::Track(lines_t* lines, QString projection, Qwt3D::SurfacePlot& pw)
     : Qwt3D::ParametricSurface(pw), x(0), y(0), z(0){
@@ -8,10 +7,10 @@ Track::Track(lines_t* lines, QString projection, Qwt3D::SurfacePlot& pw)
 }
 
 Qwt3D::Triple Track::operator() (double u, double v) {
-    int counter = 0;
+    size_t counter = 0;
     line_t *point;
     foreach(line_t *i, *line) {
-        if (counter == (int) round(u) || counter == line->size() - 1) {
+        if (counter == (size_t) fabs(round(u)) || counter == line->size() - 1) {
             point = i;
             break;
         }

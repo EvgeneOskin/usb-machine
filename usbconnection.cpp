@@ -1,4 +1,5 @@
 #include "usbconnection.h"
+#include "stdio.h"
 
 UsbConnection::UsbConnection(QObject *parent) : QObject(parent) {
     this->context = context;
@@ -24,7 +25,6 @@ void UsbConnection::print_info(){
             libusb_device_handle *handler;
             int error = libusb_open(list[i], &handler);
             int interface = 0;
-            int alternate_settings = 0;
 
             if (error) {
                 printf("Can not open device.\n");
@@ -69,7 +69,6 @@ void UsbConnection::print_info(){
                         printf("\tbInterfaceClass[%d][%d]: %d\n", i_interface, i_altinterface,
                             alt_settings.bInterfaceClass);
                         interface = i_interface;
-                        alternate_settings = i_altinterface;
 
 
                         printf("\tbInterfaceNumber[%d][%d]: %d\n", i_interface, i_altinterface,

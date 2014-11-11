@@ -11,8 +11,8 @@ UsbTool::~UsbTool() {
 
 QList<QString>* UsbTool::getDevices() {
     libusb_device **devList = NULL;
-    ssize_t count = libusb_get_device_list(this->usbContex, &devList);
-    for(int i = 0; i < count; i++) {
+    size_t count = libusb_get_device_list(this->usbContex, &devList);
+    for(size_t i = 0; i < count; i++) {
         libusb_device *device = devList[i];
     }
     return new QList<QString>();
