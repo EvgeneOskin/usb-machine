@@ -51,7 +51,7 @@ double get_var(std::string v, line_t* current_vars) {
   return 0.0;  
 }
 
-int yyerror(lines_t *l, line_t* current_vars, const char *msg) {
+int yyerror(lines_t */*l*/, line_t* /*current_vars*/, const char *msg) {
     // Add error handling routine as needed
   std::cout << msg << '\n';
   return 0;

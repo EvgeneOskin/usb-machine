@@ -6,7 +6,7 @@ Track::Track(lines_t* lines, QString projection, Qwt3D::SurfacePlot& pw)
     setProjection(projection);
 }
 
-Qwt3D::Triple Track::operator() (double u, double v) {
+Qwt3D::Triple Track::operator() (double u, double /*v*/) {
     size_t counter = 0;
     line_t *point;
     foreach(line_t *i, *line) {

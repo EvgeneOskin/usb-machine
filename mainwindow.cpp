@@ -313,7 +313,7 @@ bool MainWindow::saveDocument(QTextDocument *doc, const QString * path){
     return true;
 }
 
-void MainWindow::bindCurrentText(int i){
+void MainWindow::bindCurrentText(int /*i*/){
     bindTextActions();
 }
 

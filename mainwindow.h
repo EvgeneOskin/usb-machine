@@ -35,7 +35,7 @@ private slots:
     void about();
     void documentWasModified();
     void showOptions();
-    void bindCurrentText(int i);
+    void bindCurrentText(int /*i*/);
     void closeFile(QTextDocument *doc, const QString path);
     void disconnectWidget(CustomEditText* textEdit);
     void find();

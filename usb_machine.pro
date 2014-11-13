@@ -51,6 +51,7 @@ SOURCES = main.cpp \
     usbtool.cpp \
     track.cpp
 
+target.path = ./usb_machine
 INSTALLS += target
 
 #QMAKE_CXXFLAGS_RELEASE += -O3

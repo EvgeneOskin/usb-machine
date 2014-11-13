@@ -10,7 +10,7 @@ class Track : public Qwt3D::ParametricSurface {
 public:
     Track(lines_t *lines, QString projection ,Qwt3D::SurfacePlot& pw);
 
-    Qwt3D::Triple operator()(double u, double v);
+    Qwt3D::Triple operator()(double u, double /*v*/);
     void setProjection(QString projection);
 
 
