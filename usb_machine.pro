@@ -40,7 +40,6 @@ SOURCES = main.cpp \
     jenia.cpp \
     compilator.cpp \
     func.cpp \
-    lex.yy.cpp \
     Parser.cpp \
     ast.cpp \
     usbconnection.cpp \
@@ -49,7 +48,8 @@ SOURCES = main.cpp \
     modeling.cpp \
     searchwidget.cpp \
     usbtool.cpp \
-    track.cpp
+    track.cpp \
+    lex.yy.c
 
 target.path = ./usb_machine
 INSTALLS += target
@@ -64,7 +64,8 @@ win32 {
     LIBS += -lusb-1.0
     LIBS += -lfl
 }
-LIBS += -L$$PWD/qwtplot3d/lib/ -lqwtplot3d
+LIBS += -L$$PWD/qwtplot3d/lib/ -lqwtplot3d \
+    -lglew32
 
 INCLUDEPATH += $$PWD/qwtplot3d/include/
 INCLUDEPATH += $$PWD/static/include

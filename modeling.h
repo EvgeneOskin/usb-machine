@@ -2,7 +2,7 @@
 #define MODELING_H
 
 #include <QtWidgets>
-//#include "jenia.h"
+#include "jenia.h"
 #include "parsertypes.h"
 #include "track.h"
 
@@ -20,7 +20,7 @@ private:
     QPushButton *okButton;
     QLineEdit *projectionWidget;
     QPushButton *replotButton;
-//    Jenia *plotWidget;
+    Jenia *plotWidget;
     Track *track;
     lines_t* line;
 
