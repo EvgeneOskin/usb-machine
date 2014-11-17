@@ -15,5 +15,5 @@ int main() {
   yyparse(result, current_vars);
   fclose(f);
   std::cout << "Closed\n";
-  return 0;  
+  return 0;
 }

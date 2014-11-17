@@ -1,42 +1,46 @@
 %code requires {
 #ifndef YY_TYPEDEF_YY_SCANNER_T
 #define YY_TYPEDEF_YY_SCANNER_T
-  
-#include "DEF.h"
+
 #include "math.h"
-#include "ast.h"
-#include "stdio.h"
 #include <iostream>
+#include "stdio.h"
+#include "DEF.hpp"
+#include "ast.hpp"
+#include "spline.hpp"
+
 extern "C" int yylex(void);
 
-#endif
+#endif // YY_TYPEDEF_YY_SCANNER_T
 }
 
 %output  "Parser.cpp"
-%defines "Parser.h"
- 
+%defines "Parser.hpp"
+
 %parse-param { lines_t *result }
 %parse-param { line_t *current_vars }
+%parse-param { line_t *current_splines }
 
-%union 
+%union
 {
   variable* var;
   std::string* key;
-  
+
   AST* ast;
   ast_variable_t* ast_variable;
   ast_line_t* ast_line;
   ast_lines_t* ast_lines;
 
-  double value;
-  int i;
+  double number;
+  Spline * spline;
+  int integer;
   line_t* line;
   lines_t* lines;
 }
 
 %token <key> VARS
-%token <value> NUMBER
-%token <i> INTEGER
+%token <number> NUMBER
+%token <integer> INTEGER
 
 %token EOL
 %token END
@@ -45,6 +49,7 @@ extern "C" int yylex(void);
 %token Error_exit
 %token SPLITTER
 %token Error
+%token SEMICOLON
 
 %token PLUS
 %token MINUS
@@ -73,10 +78,12 @@ extern "C" int yylex(void);
 %token FABS
 %token POW
 
-%type <lines> code_exp 
+%type <lines> code_exp
 %type <line> line
-%type <var> exp
+%type <var> exp new_spline
 %type <ast> term factor IB_exp
+%type <spline> spline spline_nodes
+
 %type <ast_variable> ast_exp
 %type <ast_line> ast_line
 %type <ast_lines> ast_lines
@@ -86,108 +93,124 @@ extern "C" int yylex(void);
 input:
 | code_exp END {
   return 0;
- } 
+ }
 ;
 
-code_exp: code_exp EOL line { 
+code_exp: code_exp EOL line {
   $$ = add_to_lines($3, result, current_vars);
- }
+}
 | code_exp EOL loop
 | code_exp EOL
-| line { 
+| line {
   $$ = add_to_lines($1, result, current_vars);
- }
+}
+| new_spline {
+    new_spline(current_splines, $1);
+}
 | loop
 ;
 
-loop: MULT INTEGER EOL ast_lines  MULT{
+loop: MULT INTEGER EOL ast_lines  MULT {
 
   for (int i = 0; i < $2; ++i) {
     for (ast_lines_t::iterator lines_i = $4->begin();
 	 lines_i != $4->end(); ++lines_i) {
       line_t * line = new line_t();
-      for (ast_line_t::iterator line_i = (*lines_i)->begin(); 
+      for (ast_line_t::iterator line_i = (*lines_i)->begin();
 	   line_i != (*lines_i)->end(); ++line_i) {
 	variable var(line_i->first, eval(line_i->second, current_vars));
 	line->insert(var);
       }
       add_to_lines(line, result, current_vars);
-      // for (line_t::iterator i = current_vars->begin(); 
+      // for (line_t::iterator i = current_vars->begin();
       // 	   i != current_vars->end(); ++i) {
       // 	std::cout << "current var =" << i->first <<  ' ' << i->second << '\n';
       // }
     }
   }
   $$ = NULL;
- }
-;
+};
 
 ast_lines: ast_lines ast_line EOL {
-  $$ = add_to_ast_lines($2, $1);
- }
+    $$ = add_to_ast_lines($2, $1);
+}
 | ast_line EOL {
-  $$ = new_ast_lines($1);
-  }
-;
+    $$ = new_ast_lines($1);
+};
 
 ast_line: ast_line SPLITTER ast_exp {
-  $$ = add_to_ast_line($1, $3);
- }
+    $$ = add_to_ast_line($1, $3);
+}
 | ast_exp {
-  $$ = new_ast_line($1);
-  }
-;
+    $$ = new_ast_line($1);
+};
 
 ast_exp: VARS EQU IB_exp {
   $$ = new ast_variable_t(*$1, $3);
 };
 
-line: line SPLITTER exp { 
-      $$ = add_to_line($1, $3);
-   }
-  | exp {
-      $$ = new_line($1);
-    }
-  ;
+line: line SPLITTER exp {
+    $$ = add_to_line($1, $3);
+}
+| exp {
+    $$ = new_line($1);
+};
 
 exp: VARS EQU IB_exp {
-  $$ = new variable(*$1, eval($3, current_vars));
-  }
-  ;
+    $$ = new variable(*$1, eval($3, current_vars));
+}
+| VARS EQU VARS OP CP {
+    $$ = new variable(*$1, get_spline(current_splines));
+};
+
+new_spline: VARS EQU spline {
+    $$ = new variable(*$1, $3);
+};
 
 IB_exp: IB_exp PLUS factor { $$ = new AST($1, $3, PLUS); }
-  | IB_exp MINUS factor { $$ = new AST($1, $3, MINUS); }
-  | factor
-  ;
+| IB_exp MINUS factor { $$ = new AST($1, $3, MINUS); }
+| factor
+;
 
 factor: factor MULT term {  $$ = new AST($1, $3, MULT); }
-  | factor DIVI term {  $$ = new AST($1, $3, DIVI); }
-  | term
-  ;
+| factor DIVI term {  $$ = new AST($1, $3, DIVI); }
+| term
+;
 
-term: VARS { 
-  $$ = new AST(*($1)); }
-  | NUMBER { $$ = new AST($1); }
-  | INTEGER { $$ = new AST((double) $1); }
-  | MINUS term { $$ = new AST(new AST(0.0), $2, MINUS); }
-  | OP IB_exp CP { $$ = $2; }
-  | SIN OP IB_exp CP { $$ = new AST($3, SIN); }
-  | COS OP IB_exp CP { $$ = new AST($3, COS); }
-  | TAN OP IB_exp CP { $$ = new AST($3, TAN); }
-  | ASIN OP IB_exp CP { $$ = new AST($3, ASIN); }
-  | ACOS OP IB_exp CP { $$ = new AST($3, ACOS); }
-  | ATAN OP IB_exp CP { $$ = new AST($3, ATAN); }
-  | SINH OP IB_exp CP { $$ = new AST($3, SINH); }
-  | COSH OP IB_exp CP { $$ = new AST($3, COSH); }
-  | TANH OP IB_exp CP { $$ = new AST($3, TANH); }
-  | ASINH OP IB_exp CP { $$ = new AST($3, ASINH); }
-  | ACOSH OP IB_exp CP { $$ = new AST($3, ACOSH); }
-  | ATANH OP IB_exp CP { $$ = new AST($3, ATANH); }
-  | EXP OP IB_exp CP { $$ = new AST($3, EXP); }
-  | LOG OP IB_exp CP { $$ = new AST($3, LOG); }
-  | LOG10 OP IB_exp CP { $$ = new AST($3, LOG10); }
-  | SQRT OP IB_exp CP { $$ = new AST($3, SQRT); }
-  | FABS OP IB_exp CP { $$ = new AST($3, FABS); }
-  | POW OP IB_exp COMMA IB_exp CP { $$ = new AST($3, $5, POW); }
-  ;
+term: VARS {$$ = new AST(*($1)); }
+| NUMBER { $$ = new AST($1); }
+| INTEGER { $$ = new AST((double) $1); }
+| MINUS term { $$ = new AST(new AST(0.0), $2, MINUS); }
+| OP IB_exp CP { $$ = $2; }
+| SIN OP IB_exp CP { $$ = new AST($3, SIN); }
+| COS OP IB_exp CP { $$ = new AST($3, COS); }
+| TAN OP IB_exp CP { $$ = new AST($3, TAN); }
+| ASIN OP IB_exp CP { $$ = new AST($3, ASIN); }
+| ACOS OP IB_exp CP { $$ = new AST($3, ACOS); }
+| ATAN OP IB_exp CP { $$ = new AST($3, ATAN); }
+| SINH OP IB_exp CP { $$ = new AST($3, SINH); }
+| COSH OP IB_exp CP { $$ = new AST($3, COSH); }
+| TANH OP IB_exp CP { $$ = new AST($3, TANH); }
+| ASINH OP IB_exp CP { $$ = new AST($3, ASINH); }
+| ACOSH OP IB_exp CP { $$ = new AST($3, ACOSH); }
+| ATANH OP IB_exp CP { $$ = new AST($3, ATANH); }
+| EXP OP IB_exp CP { $$ = new AST($3, EXP); }
+| LOG OP IB_exp CP { $$ = new AST($3, LOG); }
+| LOG10 OP IB_exp CP { $$ = new AST($3, LOG10); }
+| SQRT OP IB_exp CP { $$ = new AST($3, SQRT); }
+| FABS OP IB_exp CP { $$ = new AST($3, FABS); }
+| POW OP IB_exp COMMA IB_exp CP { $$ = new AST($3, $5, POW); }
+;
+
+spline: OP spline_nodes CP { $$ = $2; };
+
+spline_nodes: spline_nodes SEMICOLON NUMBER NUMBER {
+    $1.add_node($3, $4);
+    $$ = $1;
+}
+| NUMBER NUMBER {
+    $$ = new Spline();
+    $$.add_node($1, $2);
+};
+
 %%

@@ -20,11 +20,11 @@ lines_t*  new_lines(line_t* new_vars, line_t* current_vars) {
   return add_to_lines(new_vars, lines, current_vars);
 }
 
-lines_t* add_to_lines(line_t* new_vars, 
-		      lines_t* old_vars, 
+lines_t* add_to_lines(line_t* new_vars,
+		      lines_t* old_vars,
 		      line_t* current_vars) {
   old_vars->push_back(new_vars);
-  // for (line_t::iterator i = current_vars->begin(); 
+  // for (line_t::iterator i = current_vars->begin();
   //      i != current_vars->end(); ++i) {
   //   std::cout << "add before  =" << i->first <<  ' ' << i->second << '\n';
   // }
@@ -34,7 +34,7 @@ lines_t* add_to_lines(line_t* new_vars,
     current_vars->erase(i->first);
     current_vars->insert(*i);
   }
-  // for (line_t::iterator i = current_vars->begin(); 
+  // for (line_t::iterator i = current_vars->begin();
   //      i != current_vars->end(); ++i) {
   //   std::cout << "add after =" << i->first <<  ' ' << i->second << '\n';
   // }
@@ -48,7 +48,7 @@ double get_var(std::string v, line_t* current_vars) {
       return i->second;
     }
   }
-  return 0.0;  
+  return 0.0;
 }
 
 int yyerror(lines_t *l, line_t* current_vars, const char *msg) {
