@@ -2,8 +2,8 @@
 #define MODELING_H
 
 #include <QtWidgets>
-#include "jenia.h"
-#include "parsertypes.h"
+#include "plotwidget.h"
+#include "parsertypes.hpp"
 #include "track.h"
 
 class ModelingWidget : public QWidget {
@@ -20,7 +20,7 @@ private:
     QPushButton *okButton;
     QLineEdit *projectionWidget;
     QPushButton *replotButton;
-    Jenia *plotWidget;
+    PlotWidget *plotWidget;
     Track *track;
     lines_t* line;
 

@@ -21,5 +21,11 @@ lines_t* add_to_lines(line_t* new_vars,
 		      lines_t* old_vars,
 		      line_t* current_vars);
 
-int yyerror(lines_t *l, line_t* current_vars, const char *msg);
+void new_spline(line_t *spline_storage, variable *spline);
+Spline* get_spline(line_t *spline_storage, std::string key);
+
+int yyerror(lines_t *l,
+            line_t* current_vars,
+            line_t* current_splines,
+            const char *msg);
 #endif // PARSER_H

@@ -3,8 +3,6 @@ TARGET = usb_machine
 CONFIG            += qt warn_on thread opengl warn_on
 QT                += widgets core opengl
 
-MOC_DIR           = tmp
-OBJECTS_DIR       = tmp
 
 DEPENDPATH += qwtplot3d
 
@@ -15,19 +13,15 @@ HEADERS = mainwindow.h \
     mainoptions.h \
     machineoptions.h \
     codehighlighter.h \
-    jenia.h \
     compilator.h \
-    DEF.h \
-    Parser.h \
-    parsertypes.h \
-    ast.h \
     modeling.h \
     usbconnection.h \
     highlightrule.h \
     instrumentwidget.h \
     searchwidget.h \
     usbtool.h \
-    track.h
+    track.h \
+    plotwidget.h
 
 SOURCES = main.cpp \
     mainwindow.cpp \
@@ -37,11 +31,7 @@ SOURCES = main.cpp \
     mainoptions.cpp \
     machineoptions.cpp \
     codehighlighter.cpp \
-    jenia.cpp \
     compilator.cpp \
-    func.cpp \
-    Parser.cpp \
-    ast.cpp \
     usbconnection.cpp \
     highlightrule.cpp \
     instrumentwidget.cpp \
@@ -49,7 +39,7 @@ SOURCES = main.cpp \
     searchwidget.cpp \
     usbtool.cpp \
     track.cpp \
-    lex.yy.c
+    plotwidget.cpp
 
 target.path = ./usb_machine
 INSTALLS += target
@@ -59,14 +49,17 @@ INSTALLS += target
 
 win32 {
     LIBS += -L$$PWD/static/lib/ -lusb-1.0
-    LIBS += -L"C:/Program Files (x86)/GnuWin32/lib" -lfl
+    LIBS += -L"C:/gnuwin32/lib" -lfl
+    LIBS += -L"C:/gnuwin32/lib" -lgsl
+    INCLUDEPATH += "C:/gnuwin32/include"
 } else {
     LIBS += -lusb-1.0
     LIBS += -lfl
 }
-LIBS += -L$$PWD/qwtplot3d/lib/ -lqwtplot3d \
-    -lglew32
+LIBS += -L$$PWD/qwtplot3d/lib/ -lqwtplot3d
+LIBS += -lglew32
+LIBS += -L$$PWD/parser/ -lparser
 
-INCLUDEPATH += $$PWD/qwtplot3d/include/
+INCLUDEPATH += $$PWD/qwtplot3d/include
 INCLUDEPATH += $$PWD/static/include
-
+INCLUDEPATH += $$PWD/parser

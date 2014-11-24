@@ -10,12 +10,14 @@
 #include "spline.hpp"
 
 extern "C" int yylex(void);
-
+extern int yyparse (lines_t *result, line_t *current_vars, line_t *current_splines);
 #endif // YY_TYPEDEF_YY_SCANNER_T
 }
 
 %output  "Parser.cpp"
 %defines "Parser.hpp"
+
+%error-verbose
 
 %parse-param { lines_t *result }
 %parse-param { line_t *current_vars }
@@ -96,21 +98,24 @@ input:
  }
 ;
 
-code_exp: code_exp EOL line {
+code_exp: code_exp EOL new_spline {
+    new_spline(current_splines, $3);
+}
+| code_exp EOL line {
   $$ = add_to_lines($3, result, current_vars);
 }
 | code_exp EOL loop
 | code_exp EOL
-| line {
-  $$ = add_to_lines($1, result, current_vars);
-}
 | new_spline {
     new_spline(current_splines, $1);
+}
+| line {
+  $$ = add_to_lines($1, result, current_vars);
 }
 | loop
 ;
 
-loop: MULT INTEGER EOL ast_lines  MULT {
+loop: MULT INTEGER EOL ast_lines MULT {
 
   for (int i = 0; i < $2; ++i) {
     for (ast_lines_t::iterator lines_i = $4->begin();
@@ -123,8 +128,8 @@ loop: MULT INTEGER EOL ast_lines  MULT {
       }
       add_to_lines(line, result, current_vars);
       // for (line_t::iterator i = current_vars->begin();
-      // 	   i != current_vars->end(); ++i) {
-      // 	std::cout << "current var =" << i->first <<  ' ' << i->second << '\n';
+      //      i != current_vars->end(); ++i) {
+      //   std::cout << "current var =" << i->first <<  ' ' << i->second << '\n';
       // }
     }
   }
@@ -156,15 +161,50 @@ line: line SPLITTER exp {
     $$ = new_line($1);
 };
 
+new_spline: VARS EQU spline {
+    $$ = new variable(*$1, $3);
+};
+
+spline: OP spline_nodes CP { $$ = $2; std::cout << "NEW ";};
+
+spline_nodes: NUMBER SPLITTER NUMBER {
+    $$ = new Spline();
+    $$->add_node($1, $3);
+}
+| spline_nodes COMMA NUMBER SPLITTER NUMBER {
+    $1->add_node($3, $5);
+    $$ = $1;
+}
+| INTEGER SPLITTER INTEGER {
+    $$ = new Spline();
+    $$->add_node($1, $3);
+}
+| spline_nodes COMMA INTEGER SPLITTER INTEGER {
+    $1->add_node($3, $5);
+    $$ = $1;
+}
+| INTEGER SPLITTER NUMBER {
+    $$ = new Spline();
+    $$->add_node($1, $3);
+}
+| spline_nodes COMMA INTEGER SPLITTER NUMBER {
+    $1->add_node($3, $5);
+    $$ = $1;
+}
+| NUMBER SPLITTER INTEGER {
+    $$ = new Spline();
+    $$->add_node($1, $3);
+}
+| spline_nodes COMMA NUMBER SPLITTER INTEGER {
+    $1->add_node($3, $5);
+    $$ = $1;
+};
+
 exp: VARS EQU IB_exp {
     $$ = new variable(*$1, eval($3, current_vars));
 }
 | VARS EQU VARS OP CP {
-    $$ = new variable(*$1, get_spline(current_splines));
-};
-
-new_spline: VARS EQU spline {
-    $$ = new variable(*$1, $3);
+    $$ = new variable(*$1, get_spline(current_splines, *$3));
 };
 
 IB_exp: IB_exp PLUS factor { $$ = new AST($1, $3, PLUS); }
@@ -201,16 +241,5 @@ term: VARS {$$ = new AST(*($1)); }
 | FABS OP IB_exp CP { $$ = new AST($3, FABS); }
 | POW OP IB_exp COMMA IB_exp CP { $$ = new AST($3, $5, POW); }
 ;
-
-spline: OP spline_nodes CP { $$ = $2; };
-
-spline_nodes: spline_nodes SEMICOLON NUMBER NUMBER {
-    $1.add_node($3, $4);
-    $$ = $1;
-}
-| NUMBER NUMBER {
-    $$ = new Spline();
-    $$.add_node($1, $2);
-};
 
 %%

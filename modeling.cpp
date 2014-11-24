@@ -15,7 +15,7 @@ ModelingWidget::ModelingWidget() : QWidget(){
 
     beatyButtonLayout->addWidget(replotButton);
     beatyButtonLayout->addWidget(okButton);
-    plotWidget = new Jenia();
+    plotWidget = new PlotWidget();
 
     mainLayout->addWidget(plotWidget, 1);
     mainLayout->addLayout(controlsLayout);
@@ -39,7 +39,7 @@ void ModelingWidget::plotLine(lines_t* line) {
 void ModelingWidget::changeProjection() {
     track = new Track(line, projectionWidget->text(), *plotWidget);
     track->setMesh(100, 3);
-    track->setDomain(0.0, line->size() - 1, 0.0, 1.0);
+    track->setDomain(0.0, 100, 0.0, 1.0);
     track->create();
 
     plotWidget->updateProjection(track->getX1(), track->getY1(), track->getZ1());

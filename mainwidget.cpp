@@ -1,4 +1,5 @@
 #include "mainwidget.h"
+#include "DEF.hpp"
 
 MainWidget::MainWidget(QWidget * parent) : QWidget(parent) {
     this->setParent(parent);

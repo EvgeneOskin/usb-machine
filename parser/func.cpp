@@ -1,8 +1,9 @@
-#include "DEF.h"
-
 #include <iostream>
 #include "stdlib.h"
-#include "string.h"
+#include <string>
+
+#include "DEF.hpp"
+
 
 line_t* new_line(variable* var) {
   line_t * vars = new line_t();
@@ -45,13 +46,37 @@ lines_t* add_to_lines(line_t* new_vars,
 double get_var(std::string v, line_t* current_vars) {
   for (line_t::iterator i = current_vars->begin(); i != current_vars->end(); ++i) {
     if (i->first.compare(v) == 0){
-      return i->second;
+      return i->second.get_number();
     }
   }
+  // TODO Need to handle no such valiablet error.
   return 0.0;
 }
 
-int yyerror(lines_t *l, line_t* current_vars, const char *msg) {
+void new_spline(line_t *spline_storage, variable *spline) {
+  spline_storage->insert(*spline);
+  return;
+}
+
+
+Spline* get_spline(line_t *spline_storage, std::string key) {
+  for (line_t::iterator i = spline_storage->begin();
+       i != spline_storage->end();
+       ++i) {
+    if (i->first.compare(key) == 0){
+      std::cout << "get spline" << "\n";
+      return i->second.get_spline();
+    }
+  }
+  std::cout << "not get spline" << "\n";
+  // TODO Need to handle no such spline error.
+  return NULL;
+}
+
+int yyerror(lines_t *l,
+            line_t* current_vars,
+            line_t* current_splines,
+            const char *msg) {
     // Add error handling routine as needed
   std::cout << msg << '\n';
   return 0;

@@ -16,7 +16,7 @@ class AST {
 public:
   AST(std::string s);
   AST(double d);
-  AST(Spline spline);
+  AST(Spline *spline);
   AST(AST* left, AST* right, int mOperation);
   AST(AST* ast, int mOperation);
 

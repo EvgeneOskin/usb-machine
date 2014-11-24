@@ -12,11 +12,14 @@ typedef enum {
 class Value {
 public:
   Value(double number);
-  Value(Spline spline);
+  Value(Spline *spline);
+  double get_number();
+  Spline* get_spline();
+  e_value_types getType();
 
 private:
   double mNumber;
-  Spline mSpline;
+  Spline *mSpline;
   e_value_types mType;
 };
 

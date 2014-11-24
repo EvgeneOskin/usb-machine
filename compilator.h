@@ -1,9 +1,9 @@
 #ifndef COMPILATOR_H
 #define COMPILATOR_H
 
-#include "parsertypes.h"
-#include "DEF.h"
-#include "Parser.h"
+#include "parsertypes.hpp"
+#include "DEF.hpp"
+#include "Parser.hpp"
 #include <string>
 #include <cstdio>
 #include <QObject>

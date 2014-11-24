@@ -1,14 +1,17 @@
-/* yylineno -- it store line number */
 %{
+
 #include "DEF.hpp"
 #include "Parser.hpp"
 #include <string>
+
 %}
 
 
 %option warn nodefault
 
-%option noyywrap never-interactive nounistd
+%option noyywrap never-interactive
+/* nounistd */
+/* yylineno -- it store line number */
 %option yylineno
 
 %%
@@ -38,7 +41,7 @@
 }
 
 (e) {
-  yylval.number = exp(1);
+  yylval.number = 2.718282;
   return NUMBER;
 }
 
