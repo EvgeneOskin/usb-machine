@@ -8,11 +8,13 @@
 TrackSegment::TrackSegment(double maxVelocity,
                            double velocityFactor,
                            double previousPoint,
-                           Value nextValue) :
+                           Value nextValue,
+                           double previousTimeSeconds) :
     maxVelocity(maxVelocity),
     previousPoint(previousPoint),
+    nextValue(nextValue),
     velocityFactor(velocityFactor),
-    nextValue(nextValue) {
+    previousTimeSeconds(previousTimeSeconds) {
 
     calculateTimeAndVelocity();
     multiplyVilocityFactors (maxVelocity/getVelocity());
@@ -34,10 +36,10 @@ void TrackSegment::createLinearGSLSpline(gsl_spline **gslSpline) {
     *gslSpline = gsl_spline_alloc (type, size);
     double xa[size];
     double ya[size];
-    xa[0] = 0.0;
+    xa[0] = previousTimeSeconds;
     ya[0] = previousPoint;
 
-    xa[1] = nextValue.get_number()/velocity;
+    xa[1] = previousTimeSeconds + (nextValue.get_number() - previousPoint)/velocity;
     ya[1] = nextValue.get_number();
 
     gsl_spline_init(*gslSpline, xa, ya, size);
@@ -53,8 +55,8 @@ void TrackSegment::createCubicGSLSpline (gsl_spline **gslSpline) {
     std::vector<double>::iterator timePointsIt = timePointsSeconds.begin ();
 
     for (size_t i = 0; i < size; ++i) {
-        xa[i] = *timePointsIt;
-        ya[i] = (*splineIt)->second;
+        xa[i] = previousTimeSeconds + (*timePointsIt);
+        ya[i] = (*splineIt)->second + previousPoint;
 
         splineIt++;
         timePointsIt++;
@@ -89,12 +91,12 @@ void TrackSegment::multiplyVilocityFactors(double velocityFactor) {
 
 void TrackSegment::calculateTimeAndVelocity() {
     double tempDeltaTimeSeconds = 0.0;
+    timePointsSeconds.clear ();
+    timePointsSeconds.push_back (tempDeltaTimeSeconds);
 
     if (nextValue.getType () == value_types_number){
         velocity = velocityFactor/maxVelocity;
         tempDeltaTimeSeconds = fabs(nextValue.get_number ()- previousPoint)/velocity;
-        timePointsSeconds.clear ();
-        timePointsSeconds.push_back (0);
         timePointsSeconds.push_back (tempDeltaTimeSeconds);
     } else {
         spline_nodes_t nodes = nextValue.get_spline ()->get_nodes ();
@@ -110,13 +112,12 @@ void TrackSegment::calculateTimeAndVelocity() {
         }
 
         gsl_spline_init (gslSpline, xa, ya, size);
-        timePointsSeconds.clear ();
         velocity = 0.0;
         for (size_t i = 0; i < size - 1; ++i) {
             SplineSegment splineSegment(xa, gslSpline, size, i);
             velocity = GSL_MAX(velocity, splineSegment.getMaxVelocity ());
-            timePointsSeconds.push_back (splineSegment.getTimeSeconds());
             tempDeltaTimeSeconds += splineSegment.getTimeSeconds();
+            timePointsSeconds.push_back (tempDeltaTimeSeconds);
         }
     }
 

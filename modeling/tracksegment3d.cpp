@@ -7,15 +7,20 @@ TrackSegment3D::TrackSegment3D(
         Value nextX, Value nextY, Value nextZ,
         double maxVelocityX, double maxVelocityY, double maxVelocityZ,
         double velocityFactor, double previousTimeSeconds) :
-    startTimeSeconds(previousTimeSeconds),
-    endTimeSeconds(previousTimeSeconds) {
+    startTimeSeconds(previousTimeSeconds) {
 
     xSegment = new TrackSegment (
-                maxVelocityX, velocityFactor, previousX, nextX);
+                maxVelocityX, velocityFactor,
+                previousX, nextX,
+                previousTimeSeconds);
     ySegment = new TrackSegment (
-                maxVelocityY, velocityFactor, previousY, nextY);
+                maxVelocityY, velocityFactor,
+                previousY, nextY,
+                previousTimeSeconds);
     zSegment = new TrackSegment (
-                maxVelocityZ, velocityFactor, previousZ, nextZ);
+                maxVelocityZ, velocityFactor,
+                previousZ, nextZ,
+                previousTimeSeconds);
 
     initMaxDeltaTimeSeconds();
 

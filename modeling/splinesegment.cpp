@@ -73,5 +73,5 @@ double SplineSegment::startTimeSeconds(){
 }
 
 double SplineSegment::endTimeSeconds(){
-    return xPoints[startIndex + 1] - 1e-6;
+    return xPoints[startIndex + 1];
 }

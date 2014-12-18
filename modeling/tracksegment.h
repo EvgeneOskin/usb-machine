@@ -8,11 +8,13 @@
 #include "gsl/gsl_statistics_double.h"
 
 class TrackSegment {
+
 public:
     TrackSegment(double maxVelocity,
                  double velocityFactor,
                  double previousPoint,
-                 Value nextValue);
+                 Value nextValue,
+                 double previousTimeSeconds);
 
     void createGSLSpline(gsl_spline **gslSpline);
     void deleteGSLSpline(gsl_spline *gslSpline);
@@ -30,6 +32,7 @@ private:
     Value nextValue;
 
     double velocityFactor;
+    double previousTimeSeconds;
 
     double deltaTimeSeconds;
 
