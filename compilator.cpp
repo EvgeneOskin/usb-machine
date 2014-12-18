@@ -37,7 +37,7 @@ lines_t* Compilator::getLines() {
     if (compiledLines == NULL) {
         return new lines_t();
     }
-    double x = 0.0, y = 0.0, z = 0.0, f = 0.0, s = 0.0, p = 0.0;
+    double x = 0.0, y = 0.0, z = 0.0, f = 0.0, s = 0.0, p = 1.0;
     std::string key_x("x"), key_y("y"), key_z("z"), key_f("f"), key_s("s"),
             key_p("p");
     foreach(line_t *line, *compiledLines) {

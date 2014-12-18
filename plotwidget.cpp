@@ -1,6 +1,6 @@
 #include "plotwidget.h"
 #include "qwt3d_types.h"
-#include "track.h"
+#include "modeling/track.h"
 
 PlotWidget::PlotWidget() : Qwt3D::SurfacePlot() {
     for (unsigned i=0; i!=coordinates()->axes.size(); ++i)

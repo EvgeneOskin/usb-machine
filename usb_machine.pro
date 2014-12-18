@@ -14,14 +14,17 @@ HEADERS = mainwindow.h \
     machineoptions.h \
     codehighlighter.h \
     compilator.h \
-    modeling.h \
     usbconnection.h \
     highlightrule.h \
     instrumentwidget.h \
     searchwidget.h \
     usbtool.h \
-    track.h \
-    plotwidget.h
+    plotwidget.h \
+    modeling/track.h \
+    modeling/modeling.h \
+    modeling/tracksegment.h \
+    modeling/splinesegment.h \
+    modeling/tracksegment3d.h
 
 SOURCES = main.cpp \
     mainwindow.cpp \
@@ -35,11 +38,14 @@ SOURCES = main.cpp \
     usbconnection.cpp \
     highlightrule.cpp \
     instrumentwidget.cpp \
-    modeling.cpp \
     searchwidget.cpp \
     usbtool.cpp \
-    track.cpp \
-    plotwidget.cpp
+    plotwidget.cpp \
+    modeling/track.cpp \
+    modeling/modeling.cpp \
+    modeling/tracksegment.cpp \
+    modeling/splinesegment.cpp \
+    modeling/tracksegment3d.cpp
 
 target.path = ./usb_machine
 INSTALLS += target

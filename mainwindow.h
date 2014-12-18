@@ -9,7 +9,7 @@
 #include "searchwidget.h"
 #include "compilator.h"
 #include "usbconnection.h"
-#include "modeling.h"
+#include "modeling/modeling.h"
 
 QT_BEGIN_NAMESPACE
 class QAction;
