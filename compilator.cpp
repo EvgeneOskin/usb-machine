@@ -13,11 +13,12 @@ void Compilator::compile() {
         return;
     }
 
-    compiledLines = new std::list< std::map< std::string, double > * >;
+    compiledLines = new lines_t();
     errors = new std::string();
     line_t current_vars;
+    line_t current_splines;
     yyrestart(inputFile);
-    yyparse(compiledLines, &current_vars);
+    yyparse(compiledLines, &current_vars, &current_splines);
     printf("\n%d    %d\n", compiledLines->size(), current_vars.size());
     fclose(inputFile);
 }
@@ -26,7 +27,7 @@ double safullyGetCoor(line_t *line, std::string coor, double *def) {
     double c = *def;
     line_t::iterator point_x = line->find(coor);
     if (point_x != line->end()) {
-        c = point_x->second;
+        c = point_x->second.get_number();
         *def = c;
     }
     return c;
@@ -36,7 +37,7 @@ lines_t* Compilator::getLines() {
     if (compiledLines == NULL) {
         return new lines_t();
     }
-    double x = 0.0, y = 0.0, z = 0.0, f = 0.0, s = 0.0, p = 0.0;
+    double x = 0.0, y = 0.0, z = 0.0, f = 0.0, s = 0.0, p = 1.0;
     std::string key_x("x"), key_y("y"), key_z("z"), key_f("f"), key_s("s"),
             key_p("p");
     foreach(line_t *line, *compiledLines) {

@@ -1,4 +1,5 @@
 #include "mainwindow.h"
+#include "usbconnection.h"
 
 MainWindow::MainWindow() {
     mainWidget = new MainWidget(this);
@@ -313,7 +314,7 @@ bool MainWindow::saveDocument(QTextDocument *doc, const QString * path){
     return true;
 }
 
-void MainWindow::bindCurrentText(int i){
+void MainWindow::bindCurrentText(int /*i*/){
     bindTextActions();
 }
 
@@ -422,6 +423,10 @@ void MainWindow::onFinishCompilation() {
     foreach(line_t* i, *lines){
         mainWidget->addLine(i);
     }
+
+    UsbConnection connection;
+    connection.print_info();
+
     statusBar()->showMessage(tr("Компилированы %1").arg(compilator->getLines()->size()), 2000);
 }
 

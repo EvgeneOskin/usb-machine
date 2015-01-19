@@ -1,45 +1,54 @@
-#include "ast.h"
-#include "Parser.h"
+#include "ast.hpp"
+#include "Parser.hpp"
 #include <iostream>
 
 AST::AST(double d) {
   this->mLeft = NULL;
   this->mRight = NULL;
-  this->mType = num;
-  this->mValue = d;
+  this->mType = ast_num;
+
+  this->mValue = new Value(d);
+}
+
+AST::AST(Spline *spline) {
+  this->mLeft = NULL;
+  this->mRight = NULL;
+  this->mType = ast_spline;
+
+  this->mValue = new Value(spline);
 }
 
 AST::AST(std::string s) {
   this->mLeft = NULL;
   this->mRight = NULL;
-  this->mType = var;
-  this->mValue = 0.0;
+  this->mType = ast_var;
+  this->mValue = NULL;
   this->mKey = s;
 }
 
 AST::AST(AST* left, AST* right, int operation) {
   this->mLeft = left;
   this->mRight = right;
-  this->mType = com;
-  this->mValue = 0.0;
+  this->mType = ast_com;
+  this->mValue = NULL;
   this->mOperation = operation;
 }
 
 AST::AST(AST* ast, int operation) {
   this->mLeft = ast;
   this->mRight = NULL;
-  this->mType = com;
-  this->mValue = 0.0;
+  this->mType = ast_com;
+  this->mValue = NULL;
   this->mOperation = operation;
 }
 
 double eval(AST *ast, line_t* current_line){
   switch(ast->mType){
-  case var:
+  case ast_var:
     return get_var(ast->mKey, current_line);
-  case num:
-    return ast->mValue;
-  case com:
+  case ast_num:
+    return ast->mValue->get_number();
+  case ast_com:
     switch(ast->mOperation) {
     case PLUS:
       return eval(ast->mLeft, current_line) + eval(ast->mRight, current_line);
@@ -91,6 +100,8 @@ double eval(AST *ast, line_t* current_line){
       return pow(eval(ast->mLeft, current_line), eval(ast->mRight, current_line));
     }
   }
+  // TODO Need to handle not matched operation!
+  return 0.0;
 }
 
 ast_line_t* new_ast_line(ast_variable_t* var) {
@@ -108,9 +119,8 @@ ast_lines_t*  new_ast_lines(ast_line_t* new_vars) {
   return add_to_ast_lines(new_vars, lines);
 }
 
-ast_lines_t* add_to_ast_lines(ast_line_t* new_vars, 
+ast_lines_t* add_to_ast_lines(ast_line_t* new_vars,
 			      ast_lines_t* old_vars) {
   old_vars->push_back(new_vars);
   return old_vars;
 }
-

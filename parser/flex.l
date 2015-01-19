@@ -1,14 +1,17 @@
-/* yylineno -- it store line number */
 %{
-#include "DEF.h"
-#include "Parser.h"
+
+#include "DEF.hpp"
+#include "Parser.hpp"
 #include <string>
+
 %}
 
- 
+
 %option warn nodefault
- 
-%option noyywrap never-interactive nounistd
+
+%option noyywrap never-interactive
+/* nounistd */
+/* yylineno -- it store line number */
 %option yylineno
 
 %%
@@ -16,55 +19,58 @@
   return EQU;
 }
 
+[ \t]*";"[ \t]* {
+  return SEMICOLON;
+}
 
 [0-9]+ {
-  yylval.i = atoi(yytext);
+  yylval.integer = atoi(yytext);
   return INTEGER;
 }
 
 [0-9]+"."([0-9]*)?([Ee][+-]?[0-9]+)? |
-"."[0-9]*([Ee][+-]?[0-9]+)? { 
-  yylval.value = atof(yytext);
+"."[0-9]*([Ee][+-]?[0-9]+)? {
+  yylval.number = atof(yytext);
   //printf("catch num = \"%e\"\n", yylval.value);
   return NUMBER;
 }
 
 (pi) {
-  yylval.value = 3.1415926535897932384626433832795;
+  yylval.number = 3.1415926535897932384626433832795;
   return NUMBER;
 }
 
 (e) {
-  yylval.value = exp(1);
+  yylval.number = 2.718282;
   return NUMBER;
 }
 
 [ \t]*"+"[ \t]*  {
-  return PLUS; 
+  return PLUS;
 }
 
 [ \t]*"-"[ \t]*  {
-  return MINUS; 
+  return MINUS;
 }
 
 [ \t]*"*"[ \t]*  {
-  return MULT; 
+  return MULT;
 }
 
 [ \t]*"/"[ \t]*  {
-  return DIVI; 
+  return DIVI;
 }
 
 [ \t]*","[ \t]*  {
-  return COMMA; 
+  return COMMA;
 }
 
 "("[ \t]*  {
-  return OP; 
+  return OP;
 }
 
 [ \t]*")"  {
-  return CP; 
+  return CP;
 }
 
 (sin) {
@@ -145,7 +151,7 @@
 }
 
  ([ \t]*\r\n|[ \t]*\n)+ {
-  return EOL; 
+  return EOL;
 }
 
 [ \t]+ {
@@ -160,4 +166,3 @@
   printf("unhandled: %s\n", yytext);
   return Error_exit;
 }
-

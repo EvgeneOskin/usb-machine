@@ -9,7 +9,7 @@
 #include "searchwidget.h"
 #include "compilator.h"
 #include "usbconnection.h"
-#include "modeling.h"
+#include "modeling/modeling.h"
 
 QT_BEGIN_NAMESPACE
 class QAction;
@@ -35,7 +35,7 @@ private slots:
     void about();
     void documentWasModified();
     void showOptions();
-    void bindCurrentText(int i);
+    void bindCurrentText(int /*i*/);
     void closeFile(QTextDocument *doc, const QString path);
     void disconnectWidget(CustomEditText* textEdit);
     void find();

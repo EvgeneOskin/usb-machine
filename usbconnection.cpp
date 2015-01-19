@@ -7,11 +7,11 @@ UsbConnection::UsbConnection(QObject *parent) : QObject(parent) {
     libusb_set_debug(context, 2);
 }
 
-UsbConnection::~UsbConnection(){
+UsbConnection::~UsbConnection() {
     libusb_exit(context);
 }
 
-void UsbConnection::print_info(){
+void UsbConnection::print_info() {
     libusb_device **list;
     ssize_t size_devices = libusb_get_device_list(context, &list);
     for (int i = 0; i < size_devices; i++) {
@@ -20,8 +20,8 @@ void UsbConnection::print_info(){
         int error_config = 0;
         libusb_get_device_descriptor(list[i], &desc);
 
-        if (desc.idVendor == (uint16_t) VENDOR_ID &&
-                desc.idProduct == (uint16_t) PRODUCT_ID) {
+        if (desc.idVendor == VENDOR_ID &&
+                desc.idProduct == PRODUCT_ID) {
             libusb_device_handle *handler;
             int error = libusb_open(list[i], &handler);
             int interface = 0;
@@ -105,21 +105,29 @@ void UsbConnection::print_info(){
                 unsigned char data[] = "A";
                 int r = 0;
 
-//                r = libusb_interrupt_transfer(handler, LIBUSB_ENDPOINT_IN, data, 2, &actual_length, 0);
-//                if (r == 0 && actual_length == sizeof(data)) {
-//                    // results of the transaction can now be found in the data buffer
-//                    // parse them here and report button press
-//                } else {
-//                    printf("Can not send data LIBUSB_ENDPOINT_IN. %d\n", r);
-//                }
+                r = libusb_interrupt_transfer(handler, CDC_IN_EP, data, sizeof(data), &actual_length, 0);
+                if (r == 0 && actual_length == sizeof(data)) {
+                    // results of the transaction can now be found in the data buffer
+                    // parse them here and report button press
+                } else {
+                    printf("Can not send data LIBUSB_ENDPOINT_IN. %d\n", r);
+                }
 
-//                r = libusb_bulk_transfer(handler, CDC_IN_EP, data, sizeof(data), &actual_length, 0);
-//                if (r == 0 && actual_length == sizeof(data)) {
-//                    // results of the transaction can now be found in the data buffer
-//                    // parse them here and report button press
-//                } else {
-//                    printf("Can not send data CDC_IN_EP. %d\n", r);
-//                }
+                r = libusb_interrupt_transfer(handler, CDC_OUT_EP, data, sizeof(data), &actual_length, 0);
+                if (r == 0 && actual_length == sizeof(data)) {
+                    // results of the transaction can now be found in the data buffer
+                    // parse them here and report button press
+                } else {
+                    printf("Can not send data LIBUSB_ENDPOINT_OUT. %d\n", r);
+                }
+
+                r = libusb_bulk_transfer(handler, CDC_IN_EP, data, sizeof(data), &actual_length, 0);
+                if (r == 0 && actual_length == sizeof(data)) {
+                    // results of the transaction can now be found in the data buffer
+                    // parse them here and report button press
+                } else {
+                    printf("Can not send data CDC_IN_EP. %d\n", r);
+                }
 
                 r = libusb_bulk_transfer(handler, CDC_OUT_EP, data, sizeof(data), &actual_length, 0);
                 if (r == 0 && actual_length == sizeof(data)) {
@@ -128,6 +136,7 @@ void UsbConnection::print_info(){
                 } else {
                     printf("Can not send data CDC_OUT_EP. %d\n", r);
                 }
+
 
                 libusb_release_interface(handler, interface);
                 libusb_close(handler);

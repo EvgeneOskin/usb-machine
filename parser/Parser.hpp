@@ -1,8 +1,10 @@
-/* A Bison parser, made by GNU Bison 2.7.12-4996.  */
 
-/* Bison interface for Yacc-like parsers in C
+/* A Bison parser, made by GNU Bison 2.4.1.  */
+
+/* Skeleton interface for Bison's Yacc-like parsers in C
    
-      Copyright (C) 1984, 1989-1990, 2000-2013 Free Software Foundation, Inc.
+      Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006
+   Free Software Foundation, Inc.
    
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -30,34 +32,29 @@
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
-#ifndef YY_YY_PARSER_H_INCLUDED
-# define YY_YY_PARSER_H_INCLUDED
-/* Enabling traces.  */
-#ifndef YYDEBUG
-# define YYDEBUG 0
-#endif
-#if YYDEBUG
-extern int yydebug;
-#endif
 /* "%code requires" blocks.  */
-/* Line 2053 of yacc.c  */
+
+/* Line 1676 of yacc.c  */
 #line 1 "grammar.yy"
 
 #ifndef YY_TYPEDEF_YY_SCANNER_T
 #define YY_TYPEDEF_YY_SCANNER_T
-  
-#include "DEF.h"
+
 #include "math.h"
-#include "ast.h"
-#include "stdio.h"
 #include <iostream>
+#include "stdio.h"
+#include "DEF.hpp"
+#include "ast.hpp"
+#include "spline.hpp"
+
 extern "C" int yylex(void);
+extern int yyparse (lines_t *result, line_t *current_vars, line_t *current_splines);
+#endif // YY_TYPEDEF_YY_SCANNER_T
 
-#endif
 
 
-/* Line 2053 of yacc.c  */
-#line 61 "Parser.h"
+/* Line 1676 of yacc.c  */
+#line 58 "Parser.hpp"
 
 /* Tokens.  */
 #ifndef YYTOKENTYPE
@@ -76,55 +73,60 @@ extern "C" int yylex(void);
      Error_exit = 266,
      SPLITTER = 267,
      Error = 268,
-     PLUS = 269,
-     MINUS = 270,
-     MULT = 271,
-     DIVI = 272,
-     COMMA = 273,
-     SIN = 274,
-     COS = 275,
-     TAN = 276,
-     ASIN = 277,
-     ACOS = 278,
-     ATAN = 279,
-     SINH = 280,
-     COSH = 281,
-     TANH = 282,
-     ASINH = 283,
-     ACOSH = 284,
-     ATANH = 285,
-     EXP = 286,
-     LOG = 287,
-     LOG10 = 288,
-     SQRT = 289,
-     FABS = 290,
-     POW = 291
+     SEMICOLON = 269,
+     PLUS = 270,
+     MINUS = 271,
+     MULT = 272,
+     DIVI = 273,
+     COMMA = 274,
+     SIN = 275,
+     COS = 276,
+     TAN = 277,
+     ASIN = 278,
+     ACOS = 279,
+     ATAN = 280,
+     SINH = 281,
+     COSH = 282,
+     TANH = 283,
+     ASINH = 284,
+     ACOSH = 285,
+     ATANH = 286,
+     EXP = 287,
+     LOG = 288,
+     LOG10 = 289,
+     SQRT = 290,
+     FABS = 291,
+     POW = 292
    };
 #endif
+
 
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE
 {
-/* Line 2053 of yacc.c  */
-#line 22 "grammar.yy"
+
+/* Line 1676 of yacc.c  */
+#line 27 "grammar.yy"
 
   variable* var;
   std::string* key;
-  
+
   AST* ast;
   ast_variable_t* ast_variable;
   ast_line_t* ast_line;
   ast_lines_t* ast_lines;
 
-  double value;
-  int i;
+  double number;
+  Spline * spline;
+  int integer;
   line_t* line;
   lines_t* lines;
 
 
-/* Line 2053 of yacc.c  */
-#line 128 "Parser.h"
+
+/* Line 1676 of yacc.c  */
+#line 130 "Parser.hpp"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -133,18 +135,4 @@ typedef union YYSTYPE
 
 extern YYSTYPE yylval;
 
-#ifdef YYPARSE_PARAM
-#if defined __STDC__ || defined __cplusplus
-int yyparse (void *YYPARSE_PARAM);
-#else
-int yyparse ();
-#endif
-#else /* ! YYPARSE_PARAM */
-#if defined __STDC__ || defined __cplusplus
-int yyparse (lines_t *result, line_t *current_vars);
-#else
-int yyparse ();
-#endif
-#endif /* ! YYPARSE_PARAM */
 
-#endif /* !YY_YY_PARSER_H_INCLUDED  */

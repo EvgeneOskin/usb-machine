@@ -5,8 +5,8 @@
 #include "libusb.h"
 
 
-#define VENDOR_ID 1155
-#define PRODUCT_ID 22336
+#define VENDOR_ID 0x0483
+#define PRODUCT_ID 0xAB12
 
 #define CDC_IN_EP                       0x81  /* EP1 for data IN */
 #define CDC_OUT_EP                      0x01  /* EP1 for data OUT */
