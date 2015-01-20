@@ -74,6 +74,14 @@ std::string Track::getZName() {
     return zName;
 }
 
+double get_number_from_parser_value(Value value) {
+    if (value.getType () == value_types_number){
+        return value.get_number ();
+    } else {
+        return (*(value.get_spline ()->get_nodes ().begin ()))->second;
+    }
+}
+
 double Track::calculateAllWorkTime() {
     double totalTimeSeconds = 0.0;
     Value currentX(0.0);
@@ -101,21 +109,9 @@ double Track::calculateAllWorkTime() {
 
 
         if (point_it == line->begin()) {
-            if (currentX.getType () == value_types_number){
-                previousX = currentX.get_number ();
-            } else {
-                previousX = (*(currentX.get_spline ()->get_nodes ().begin ()))->second;
-            }
-            if (currentY.getType () == value_types_number){
-                previousY = currentY.get_number();
-            } else {
-                previousY = (*(currentY.get_spline ()->get_nodes ().begin ()))->second;
-            }
-            if (currentZ.getType () == value_types_number){
-                previousZ = currentZ.get_number ();
-            } else {
-                previousZ = (*(currentZ.get_spline ()->get_nodes ().begin ()))->second;
-            }
+            previousX = get_number_from_parser_value(currentX);
+            previousY = get_number_from_parser_value(currentY);
+            previousZ = get_number_from_parser_value(currentZ);
             if (currentX.getType () == value_types_number &&
                     currentY.getType () == value_types_number &&
                     currentZ.getType () == value_types_number) {

@@ -54,18 +54,22 @@ INSTALLS += target
 
 
 win32 {
-    LIBS += -L$$PWD/static/lib/ -lusb-1.0
     LIBS += -L"C:/gnuwin32/lib" -lfl
     LIBS += -L"C:/gnuwin32/lib" -lgsl
+    LIBS += -lglew32
+    LIBS += -L$$PWD/static/lib/ -lusb-1.0
     INCLUDEPATH += "C:/gnuwin32/include"
 } else {
     LIBS += -lusb-1.0
     LIBS += -lfl
+    LIBS += -lgsl -lgslcblas
+    LIBS += -lopengl
 }
-LIBS += -L$$PWD/qwtplot3d/lib/ -lqwtplot3d
-LIBS += -lglew32
-LIBS += -L$$PWD/parser/ -lparser
 
 INCLUDEPATH += $$PWD/qwtplot3d/include
-INCLUDEPATH += $$PWD/static/include
+LIBS += -L$$PWD/lib/ -lqwtplot3d
+
 INCLUDEPATH += $$PWD/parser
+LIBS += -L$$PWD/parser/ -lparser
+
+INCLUDEPATH += $$PWD/static/include

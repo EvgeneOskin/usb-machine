@@ -19,7 +19,7 @@ void Compilator::compile() {
     line_t current_splines;
     yyrestart(inputFile);
     yyparse(compiledLines, &current_vars, &current_splines);
-    printf("\n%d    %d\n", compiledLines->size(), current_vars.size());
+    printf("\n%lu    %lu\n", compiledLines->size(), current_vars.size());
     fclose(inputFile);
 }
 

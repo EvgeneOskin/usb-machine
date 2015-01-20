@@ -95,7 +95,7 @@ void TrackSegment::calculateTimeAndVelocity() {
     timePointsSeconds.push_back (tempDeltaTimeSeconds);
 
     if (nextValue.getType () == value_types_number){
-        velocity = velocityFactor/maxVelocity;
+        velocity = fabs(velocityFactor/maxVelocity);
         tempDeltaTimeSeconds = fabs(nextValue.get_number ()- previousPoint)/velocity;
         timePointsSeconds.push_back (tempDeltaTimeSeconds);
     } else {
@@ -115,7 +115,7 @@ void TrackSegment::calculateTimeAndVelocity() {
         velocity = 0.0;
         for (size_t i = 0; i < size - 1; ++i) {
             SplineSegment splineSegment(xa, gslSpline, size, i);
-            velocity = GSL_MAX(velocity, splineSegment.getMaxVelocity ());
+            velocity = GSL_MAX(velocity, fabs(splineSegment.getMaxVelocity ()));
             tempDeltaTimeSeconds += splineSegment.getTimeSeconds();
             timePointsSeconds.push_back (tempDeltaTimeSeconds);
         }
