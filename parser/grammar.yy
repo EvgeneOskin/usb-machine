@@ -167,36 +167,12 @@ new_spline: VARS EQU spline {
 
 spline: OP spline_nodes CP { $$ = $2; std::cout << "NEW ";};
 
-spline_nodes: NUMBER SPLITTER NUMBER {
+spline_nodes: IB_exp SPLITTER IB_exp {
     $$ = new Spline();
-    $$->add_node($1, $3);
+    $$->add_node(eval($1, current_vars), eval($3, current_vars));
 }
-| spline_nodes COMMA NUMBER SPLITTER NUMBER {
-    $1->add_node($3, $5);
-    $$ = $1;
-}
-| INTEGER SPLITTER INTEGER {
-    $$ = new Spline();
-    $$->add_node($1, $3);
-}
-| spline_nodes COMMA INTEGER SPLITTER INTEGER {
-    $1->add_node($3, $5);
-    $$ = $1;
-}
-| INTEGER SPLITTER NUMBER {
-    $$ = new Spline();
-    $$->add_node($1, $3);
-}
-| spline_nodes COMMA INTEGER SPLITTER NUMBER {
-    $1->add_node($3, $5);
-    $$ = $1;
-}
-| NUMBER SPLITTER INTEGER {
-    $$ = new Spline();
-    $$->add_node($1, $3);
-}
-| spline_nodes COMMA NUMBER SPLITTER INTEGER {
-    $1->add_node($3, $5);
+| spline_nodes COMMA IB_exp SPLITTER IB_exp {
+    $1->add_node(eval($3, current_vars), eval($5, current_vars));
     $$ = $1;
 };
 

@@ -67,7 +67,7 @@ win32 {
 }
 
 INCLUDEPATH += $$PWD/qwtplot3d/include
-LIBS += -L$$PWD/lib/ -lqwtplot3d
+LIBS += -L$$PWD/qwtplot3d/lib/ -lqwtplot3d
 
 INCLUDEPATH += $$PWD/parser
 LIBS += -L$$PWD/parser/ -lparser
