@@ -1,25 +1,31 @@
 #ifndef COMPILATOR_H
 #define COMPILATOR_H
 
-#include "parsertypes.hpp"
-#include "DEF.hpp"
-#include "Parser.hpp"
+#include "grammar_yacc.h"
 #include <string>
 #include <cstdio>
 #include <QObject>
+#include <QString>
 
-class Compilator {
+class Compilator : public QObject, public Parser {
+    Q_OBJECT
 
 public:
     Compilator(const char* filename);
+    ~Compilator();
     void compile();
     lines_t* getLines();
-    std::string* getErrors();
+    int handleError(const char *msg,
+                     int first_line, int first_column,
+                     int last_line, int last_column);
+    bool isErrorHappen();
+
+signals:
+    void parserError(QString error);
 
 private:
-    FILE* inputFile;
-    lines_t* compiledLines = NULL;
-    std::string* errors;
+    FILE* inputFile = NULL;
+    bool errorHappen;
 };
 
 #endif // COMPILATOR_H

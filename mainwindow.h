@@ -50,7 +50,7 @@ private slots:
     void findInCurrent(QString regexp);
     void replaceInCurrent(QString regexp, QString text);
     void replaceAllInCurrent(QString regexp, QString text);
-
+    void showMessageBox(QString error);
 private:
     void createActions();
     void createMenus();

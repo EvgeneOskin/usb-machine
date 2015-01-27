@@ -405,15 +405,23 @@ void MainWindow::machineOff(){
 
 }
 
+void MainWindow::showMessageBox(QString error) {
+    QMessageBox::warning (this, NULL, error);
+}
+
 void MainWindow::compile() {
+    statusBar()->showMessage(tr("Компилирую"), 2000);
     compilator = new Compilator(this->mainWidget->getCurrentPath().toStdString().c_str());
+    connect (compilator, SIGNAL(parserError(QString)), this, SLOT(showMessageBox(QString)));
     compilator->compile();
     //this->thread()->currentThread()->sleep(5);
-    statusBar()->showMessage(tr("Компилирую"), 2000);
 }
 
 void MainWindow::runCode() {
     compile();
+    if (compilator->isErrorHappen ()){
+        return;
+    }
     onFinishCompilation();
 }
 
@@ -427,13 +435,16 @@ void MainWindow::onFinishCompilation() {
     UsbConnection connection;
     connection.print_info();
 
-    statusBar()->showMessage(tr("Компилированы %1").arg(compilator->getLines()->size()), 2000);
+//    statusBar()->showMessage(tr("Компилированы %1").arg(compilator->getLines()->size()), 2000);
 }
 
 void MainWindow::onModeling() {
     compile();
+    if (compilator->isErrorHappen ()){
+        return;
+    }
     lines_t *lines = compilator->getLines();
-    statusBar()->showMessage(tr("Компилированы %1").arg(lines->size()), 2000);
+//    statusBar()->showMessage(tr("Компилированы %1").arg(lines->size()), 2000);
     usbConnection->print_info();
     if (lines->size() != 0) {
         modelingWidget->plotLine(lines);

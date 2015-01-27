@@ -2,7 +2,7 @@
 #define TRACK_H
 
 #include "qwt3d_parametricsurface.h"
-#include "parsertypes.hpp"
+#include "parser/parsertypes.hpp"
 #include <QString>
 #include "tracksegment3d.h"
 

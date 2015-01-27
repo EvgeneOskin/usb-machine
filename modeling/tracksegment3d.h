@@ -2,7 +2,7 @@
 #define TRACKSEGMENT3D_H
 
 #include "tracksegment.h"
-#include "parser_value.hpp"
+#include "parser/parser_value.hpp"
 #include "gsl/gsl_spline.h"
 
 class TrackSegment3D {

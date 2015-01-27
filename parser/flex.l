@@ -1,9 +1,10 @@
 %{
 
-#include "DEF.hpp"
-#include "Parser.hpp"
+#include "grammar_yacc.h"
 #include <string>
 
+#undef YY_DECL
+#define YY_DECL extern "C" int grammarlex(YYSTYPE* yylval, YYLTYPE* yylloc)
 %}
 
 
@@ -24,24 +25,24 @@
 }
 
 [0-9]+ {
-  yylval.integer = atoi(yytext);
+  yylval->integer = atoi(yytext);
   return INTEGER;
 }
 
 [0-9]+"."([0-9]*)?([Ee][+-]?[0-9]+)? |
 "."[0-9]*([Ee][+-]?[0-9]+)? {
-  yylval.number = atof(yytext);
+  yylval->number = atof(yytext);
   //printf("catch num = \"%e\"\n", yylval.value);
   return NUMBER;
 }
 
 (pi) {
-  yylval.number = 3.1415926535897932384626433832795;
+  yylval->number = 3.1415926535897932384626433832795;
   return NUMBER;
 }
 
 (e) {
-  yylval.number = 2.718282;
+  yylval->number = 2.718282;
   return NUMBER;
 }
 
@@ -146,7 +147,7 @@
 }
 
 ([a-zA-Z][a-zA-Z0-9]*) {
-  yylval.key = new std::string(yytext);
+  yylval->key = new std::string(yytext);
   return VARS;
 }
 
