@@ -2,7 +2,7 @@
 #define TRACKSEGMENT_H
 
 #include <vector>
-#include "parser_value.hpp"
+#include "parser/parser_value.hpp"
 
 #include "gsl/gsl_spline.h"
 #include "gsl/gsl_statistics_double.h"

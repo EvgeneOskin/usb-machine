@@ -1,5 +1,4 @@
 #include "mainwidget.h"
-#include "DEF.hpp"
 
 MainWidget::MainWidget(QWidget * parent) : QWidget(parent) {
     this->setParent(parent);
@@ -138,14 +137,24 @@ void MainWidget::clearTables() {
     mainVarTable->setRowCount(0);
 }
 
+double get_var(std::string v, line_t* current_vars, double defaultDouble) {
+  for (line_t::iterator i = current_vars->begin(); i != current_vars->end(); ++i) {
+    if (i->first.compare(v) == 0){
+      return i->second.get_number();
+    }
+  }
+  // TODO Need to handle no such valiablet error.
+  return defaultDouble;
+}
+
 void MainWidget::addLine(line_t *line) {
     int new_index = mainVarTable->rowCount();
     mainVarTable->insertRow(new_index);
-    double x = get_var("x", line);
-    double y = get_var("y", line);
-    double z = get_var("z", line);
-    double f = get_var("f", line);
-    double s = get_var("s", line);
+    double x = get_var("x", line, 0.0);
+    double y = get_var("y", line, 0.0);
+    double z = get_var("z", line, 0.0);
+    double f = get_var("f", line, 0.0);
+    double s = get_var("s", line, 0.0);
     //t, x, y, z, f, s
     QTableWidgetItem *newItemT = new QTableWidgetItem(tr("%1").arg(new_index));
     QTableWidgetItem *newItemX = new QTableWidgetItem(tr("%1").arg(x));

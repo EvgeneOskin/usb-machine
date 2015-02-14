@@ -3,24 +3,37 @@
 extern FILE* yyin;
 extern void yyrestart(FILE*);
 
-Compilator::Compilator(const char* filename) {
+Compilator::Compilator(const char* filename) : QObject(), Parser() {
     inputFile = fopen(filename, "r");
+    errorHappen = false;
+}
 
+Compilator::~Compilator() {
+    if (inputFile != NULL){
+        fclose(inputFile);
+    }
 }
 
 void Compilator::compile() {
     if (inputFile == NULL){
+        errorHappen = true;
         return;
     }
 
-    compiledLines = new lines_t();
-    errors = new std::string();
-    line_t current_vars;
-    line_t current_splines;
-    yyrestart(inputFile);
-    yyparse(compiledLines, &current_vars, &current_splines);
-    printf("\n%lu    %lu\n", compiledLines->size(), current_vars.size());
+    errorHappen = false;
+    flexrestart(inputFile);
+    grammarparse(this);
     fclose(inputFile);
+}
+
+int Compilator::handleError(const char *msg,
+                             int first_line, int first_column,
+                             int last_line, int last_column) {
+    errorHappen = true;
+    emit parserError(QString(msg).append (" %1:%2 - %3:%4")
+                .arg (first_line).arg(first_column)
+                .arg(last_line).arg(last_column));
+    return 0;
 }
 
 double safullyGetCoor(line_t *line, std::string coor, double *def) {
@@ -34,13 +47,10 @@ double safullyGetCoor(line_t *line, std::string coor, double *def) {
 }
 
 lines_t* Compilator::getLines() {
-    if (compiledLines == NULL) {
-        return new lines_t();
-    }
     double x = 0.0, y = 0.0, z = 0.0, f = 0.0, s = 0.0, p = 1.0;
     std::string key_x("x"), key_y("y"), key_z("z"), key_f("f"), key_s("s"),
             key_p("p");
-    foreach(line_t *line, *compiledLines) {
+    foreach(line_t *line, *result) {
         line->insert(variable(key_x, safullyGetCoor(line, key_x, &x)));
         line->insert(variable(key_y, safullyGetCoor(line, key_y, &y)));
         line->insert(variable(key_z, safullyGetCoor(line, key_z, &z)));
@@ -49,9 +59,9 @@ lines_t* Compilator::getLines() {
         line->insert(variable(key_p, safullyGetCoor(line, key_p, &p)));
     }
 
-    return compiledLines;
+    return result;
 }
 
-std::string* Compilator::getErrors() {
-    return errors;
+bool Compilator::isErrorHappen() {
+    return errorHappen;
 }

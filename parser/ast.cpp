@@ -1,5 +1,5 @@
 #include "ast.hpp"
-#include "Parser.hpp"
+#include "grammar_yacc.h"
 #include <iostream>
 
 AST::AST(double d) {
@@ -42,65 +42,104 @@ AST::AST(AST* ast, int operation) {
   this->mOperation = operation;
 }
 
-double eval(AST *ast, line_t* current_line){
+double eval(AST *ast, Parser* parser, char *error) {
+  double left = 0.0;
+  double right = 0.0;
+
+  if (ast->mRight != NULL) {
+    right = eval(ast->mRight, parser, error);
+  }
+  if (ast->mLeft != NULL) {
+    left = eval(ast->mLeft, parser, error);
+  }
+  if (*error) {
+    return 0.0;
+  }
+
   switch(ast->mType){
   case ast_var:
-    return get_var(ast->mKey, current_line);
+    return parser->getVariable(ast->mKey, error);
   case ast_num:
     return ast->mValue->get_number();
   case ast_com:
     switch(ast->mOperation) {
     case PLUS:
-      return eval(ast->mLeft, current_line) + eval(ast->mRight, current_line);
+      return left + right;
     case MINUS:
-      return eval(ast->mLeft, current_line) - eval(ast->mRight, current_line);
+      return left - right;
     case MULT:
-      return eval(ast->mLeft, current_line) * eval(ast->mRight, current_line);
+      return left * right;
     case DIVI:
-      return eval(ast->mLeft, current_line) / eval(ast->mRight, current_line);
+      if (right == 0.0) {
+        // TODO Need add correct columns and lines
+        parser->handleError("Divide by zero!", -1, -1, -1, -1);
+        *error = 1;
+        return 0.0;
+      }
+      return left / right;
     case SIN:
-      return sin(eval(ast->mLeft, current_line));
+      return sin(left);
     case COS:
-      return cos(eval(ast->mLeft, current_line));
+      return cos(left);
     case TAN:
-      return tan(eval(ast->mLeft, current_line));
+      return tan(left);
 
     case ASIN:
-      return asin(eval(ast->mLeft, current_line));
+      return asin(left);
     case ACOS:
-      return acos(eval(ast->mLeft, current_line));
+      return acos(left);
     case ATAN:
-      return atan(eval(ast->mLeft, current_line));
+      return atan(left);
 
     case SINH:
-      return sinh(eval(ast->mLeft, current_line));
+      return sinh(left);
     case COSH:
-      return cosh(eval(ast->mLeft, current_line));
+      return cosh(left);
     case TANH:
-      return tanh(eval(ast->mLeft, current_line));
+      return tanh(left);
 
     case ASINH:
-      return asinh(eval(ast->mLeft, current_line));
+      return asinh(left);
     case ACOSH:
-      return acosh(eval(ast->mLeft, current_line));
+      return acosh(left);
     case ATANH:
-      return atanh(eval(ast->mLeft, current_line));
+      return atanh(left);
 
     case EXP:
-      return exp(eval(ast->mLeft, current_line));
+      return exp(left);
     case LOG:
-      return log(eval(ast->mLeft, current_line));
+      if (left <= 0.0) {
+        // TODO Need add correct columns and lines
+        parser->handleError("Log from not positive argument!", -1, -1, -1, -1);
+        *error = 1;
+        return 0.0;
+      }
+      return log(left);
     case LOG10:
-      return log10(eval(ast->mLeft, current_line));
+      if (left <= 0.0) {
+        // TODO Need add correct columns and lines
+        parser->handleError("Log from not positive argument!", -1, -1, -1, -1);
+        *error = 1;
+        return 0.0;
+      }
+      return log10(left);
     case SQRT:
-      return sqrt(eval(ast->mLeft, current_line));
+      if (left < 0.0) {
+        // TODO Need add correct columns and lines
+        parser->handleError("Sqrt from negative value!", -1, -1, -1, -1);
+        *error = 1;
+        return 0.0;
+      }
+      return sqrt(left);
     case FABS:
-      return fabs(eval(ast->mLeft, current_line));
+      return fabs(left);
     case POW:
-      return pow(eval(ast->mLeft, current_line), eval(ast->mRight, current_line));
+      return pow(left, right);
     }
   }
-  // TODO Need to handle not matched operation!
+  // TODO Need add correct columns and lines
+  parser->handleError("Unkown action!", -1, -1, -1, -1);
+  *error = 1;
   return 0.0;
 }
 
@@ -120,7 +159,7 @@ ast_lines_t*  new_ast_lines(ast_line_t* new_vars) {
 }
 
 ast_lines_t* add_to_ast_lines(ast_line_t* new_vars,
-			      ast_lines_t* old_vars) {
+                  ast_lines_t* old_vars) {
   old_vars->push_back(new_vars);
   return old_vars;
 }

@@ -3,7 +3,7 @@
 
 #include "qwt3d_surfaceplot.h"
 #include "qwt3d_parametricsurface.h"
-#include "parsertypes.hpp"
+#include "parser/parsertypes.hpp"
 
 class PlotWidget : public Qwt3D::SurfacePlot {
 

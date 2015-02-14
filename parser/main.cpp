@@ -1,22 +1,28 @@
 #include "Parser.hpp"
 #include <iostream>
 #include "cstdio"
-#include "DEF.hpp"
+#include <memory>
 
-extern void yyrestart(FILE*);
-extern int yyparse (lines_t *result, line_t *current_vars, line_t *current_splines);
 
+class ParserImpl : public Parser {
+  int handleError(const char *msg,
+                   int first_line, int first_column,
+                   int last_line, int last_column) {
+    std::cout << msg << " " << first_line << ":" << first_column
+              << " - " << last_line << ":" << last_column << "\n";
+    return 0;
+  }
+};
 
 int main() {
-  lines_t *result = new lines_t();
-  line_t *current_vars = new line_t();
-  line_t *current_spline = new line_t();
+  Parser* parser = new ParserImpl();
   FILE * f = fopen("test_template.dat", "r");
 
   std::cout << "Hello, my master.\n";
   yyrestart(f);
-  yyparse(result, current_vars, current_spline);
+  yyparse(parser);
   fclose(f);
   std::cout << "Closed\n";
+  delete parser;
   return 0;
 }

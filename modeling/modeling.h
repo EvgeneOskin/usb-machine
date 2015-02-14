@@ -3,7 +3,7 @@
 
 #include <QtWidgets>
 #include "plotwidget.h"
-#include "parsertypes.hpp"
+#include "parser/parsertypes.hpp"
 #include "track.h"
 
 class ModelingWidget : public QWidget {

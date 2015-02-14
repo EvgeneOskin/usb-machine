@@ -28,7 +28,7 @@ public:
   e_AST mType;
 };
 
-double eval(AST *ast, line_t* current_line);
+double eval(AST *ast, Parser* parser, char* error);
 
 typedef std::pair< std::string, AST* > ast_variable_t;
 typedef std::map< std::string, AST* > ast_line_t;

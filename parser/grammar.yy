@@ -5,23 +5,24 @@
 #include "math.h"
 #include <iostream>
 #include "stdio.h"
-#include "DEF.hpp"
-#include "ast.hpp"
-#include "spline.hpp"
+#include "parser/parsertypes.hpp"
+#include "parser/ast.hpp"
+#include "parser/spline.hpp"
 
-extern "C" int yylex(void);
-extern int yyparse (lines_t *result, line_t *current_vars, line_t *current_splines);
+    void flexrestart(FILE*);
+    int grammarparse(Parser*);
+
 #endif // YY_TYPEDEF_YY_SCANNER_T
 }
 
-%output  "Parser.cpp"
-%defines "Parser.hpp"
+%output  "y.tab.c"
+%defines "y.tab.h"
 
 %error-verbose
+%define api.pure
+%locations
 
-%parse-param { lines_t *result }
-%parse-param { line_t *current_vars }
-%parse-param { line_t *current_splines }
+%parse-param { Parser *parser }
 
 %union
 {
@@ -38,6 +39,21 @@ extern int yyparse (lines_t *result, line_t *current_vars, line_t *current_splin
   int integer;
   line_t* line;
   lines_t* lines;
+}
+
+%code {
+
+extern "C" int grammarlex(YYSTYPE* yylval, YYLTYPE* yylloc);
+extern int grammarparse (Parser *parsxer);
+extern "C" int grammarerror (YYLTYPE *llocp, Parser *parser, const char *msg);
+
+int grammarerror (YYLTYPE  *llocp, Parser *parser, const char *msg) {
+    // Add error handling routine as needed
+    return parser->handleError
+        (msg,
+         llocp->first_line, llocp->first_column,
+         llocp->last_line, llocp->last_column);
+}
 }
 
 %token <key> VARS
@@ -91,6 +107,7 @@ extern int yyparse (lines_t *result, line_t *current_vars, line_t *current_splin
 %type <ast_lines> ast_lines
 %type <lines> loop
 
+
 %%
 input:
 | code_exp END {
@@ -99,36 +116,41 @@ input:
 ;
 
 code_exp: code_exp EOL new_spline {
-    new_spline(current_splines, $3);
+    parser->newSpline($3);
 }
 | code_exp EOL line {
-  $$ = add_to_lines($3, result, current_vars);
+  $$ = parser->add2Lines($3);
 }
 | code_exp EOL loop
 | code_exp EOL
 | new_spline {
-    new_spline(current_splines, $1);
+    parser->newSpline($1);
 }
 | line {
-  $$ = add_to_lines($1, result, current_vars);
+  $$ = parser->add2Lines($1);
 }
 | loop
 ;
 
 loop: MULT INTEGER EOL ast_lines MULT {
 
+  char error;
   for (int i = 0; i < $2; ++i) {
     for (ast_lines_t::iterator lines_i = $4->begin();
-	 lines_i != $4->end(); ++lines_i) {
+         lines_i != $4->end();
+         ++lines_i) {
       line_t * line = new line_t();
       for (ast_line_t::iterator line_i = (*lines_i)->begin();
-	   line_i != (*lines_i)->end(); ++line_i) {
-	variable var(line_i->first, eval(line_i->second, current_vars));
-	line->insert(var);
+           line_i != (*lines_i)->end();
+           ++line_i) {
+          variable var(line_i->first, eval(line_i->second, parser, &error));
+          if (error) { YYERROR;}
+
+          line->insert(var);
       }
-      add_to_lines(line, result, current_vars);
-      // for (line_t::iterator i = current_vars->begin();
-      //      i != current_vars->end(); ++i) {
+      parser->add2Lines(line);
+      // for (line_t::iterator i = parser->current_vars->begin();
+      //      i != parser->current_vars->end(); ++i) {
       //   std::cout << "current var =" << i->first <<  ' ' << i->second << '\n';
       // }
     }
@@ -155,10 +177,10 @@ ast_exp: VARS EQU IB_exp {
 };
 
 line: line SPLITTER exp {
-    $$ = add_to_line($1, $3);
+    $$ = parser->add2Line($1, $3);
 }
 | exp {
-    $$ = new_line($1);
+    $$ = parser->newLine($1);
 };
 
 new_spline: VARS EQU spline {
@@ -168,19 +190,28 @@ new_spline: VARS EQU spline {
 spline: OP spline_nodes CP { $$ = $2; std::cout << "NEW ";};
 
 spline_nodes: IB_exp SPLITTER IB_exp {
+    char error = 0;
     $$ = new Spline();
-    $$->add_node(eval($1, current_vars), eval($3, current_vars));
+    $$->add_node(eval($1, parser, &error), eval($3, parser, &error));
+    if (error) { YYERROR;}
 }
 | spline_nodes COMMA IB_exp SPLITTER IB_exp {
-    $1->add_node(eval($3, current_vars), eval($5, current_vars));
+    char error = 0;
+    $1->add_node(eval($3, parser, &error), eval($5, parser, &error));
+    if (error) { YYERROR;}
+
     $$ = $1;
 };
 
 exp: VARS EQU IB_exp {
-    $$ = new variable(*$1, eval($3, current_vars));
+    char error = 0;
+    $$ = new variable(*$1, eval($3, parser, &error));
+    if (error) { YYERROR;}
 }
 | VARS EQU VARS OP CP {
-    $$ = new variable(*$1, get_spline(current_splines, *$3));
+    char error = 0;
+    $$ = new variable(*$1, parser->getSpline(*$3, &error));
+    if (error) { YYERROR;}
 };
 
 IB_exp: IB_exp PLUS factor { $$ = new AST($1, $3, PLUS); }
