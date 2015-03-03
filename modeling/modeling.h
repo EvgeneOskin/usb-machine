@@ -2,7 +2,7 @@
 #define MODELING_H
 
 #include <QtWidgets>
-#include "plotwidget.h"
+#include "widgets/plotwidget.h"
 #include "parser/parsertypes.hpp"
 #include "track.h"
 

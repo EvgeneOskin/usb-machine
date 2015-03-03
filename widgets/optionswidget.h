@@ -2,18 +2,24 @@
 #define OPTIONSWIDGET_H
 
 #include <QtWidgets>
-#include "machineoptions.h"
-#include "mainoptions.h"
+#include "widgets/machineoptions.h"
+#include "widgets/mainoptions.h"
+
+#include "options.h"
+
+
 class OptionsWidget : public QDialog {
     Q_OBJECT
 
 public:
-    OptionsWidget(QWidget *parent, QSettings* settings);
+    OptionsWidget(QWidget *parent=0);
+    ~OptionsWidget();
 
-private:    
+private:
+    Options *options;
+
     QVBoxLayout* layout;
 
-    QSettings* settings;
     QTabWidget* tabWidget;
     MainOptions *mainWidget;
     MachineOptions* machineWidget;

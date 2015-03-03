@@ -19,17 +19,11 @@ DEPENDPATH += qwtplot3d
 HEADERS = mainwindow.h \
     mainwidget.h \
     customedittext.h \
-    optionswidget.h \
-    mainoptions.h \
-    machineoptions.h \
     codehighlighter.h \
     compilator.h \
-    usbconnection.h \
     highlightrule.h \
     instrumentwidget.h \
     searchwidget.h \
-    usbtool.h \
-    plotwidget.h \
     modeling/track.h \
     modeling/modeling.h \
     modeling/tracksegment.h \
@@ -38,23 +32,27 @@ HEADERS = mainwindow.h \
     parser/ast.hpp \
     parser/parser_value.hpp \
     parser/parsertypes.hpp \
-    parser/spline.hpp
+    parser/spline.hpp \
+    usb/connection.h \
+    usb/trackdataformatter.h \
+    usb/dataformatter.h \
+    usb/usbtypes.h \
+    usb/axisrange.h \
+    widgets/machineoptions.h \
+    widgets/mainoptions.h \
+    options.h \
+    widgets/plotwidget.h \
+    widgets/optionswidget.h
 
 SOURCES = main.cpp \
     mainwindow.cpp \
     mainwidget.cpp \
     customedittext.cpp \
-    optionswidget.cpp \
-    mainoptions.cpp \
-    machineoptions.cpp \
     codehighlighter.cpp \
     compilator.cpp \
-    usbconnection.cpp \
     highlightrule.cpp \
     instrumentwidget.cpp \
     searchwidget.cpp \
-    usbtool.cpp \
-    plotwidget.cpp \
     modeling/track.cpp \
     modeling/modeling.cpp \
     modeling/tracksegment.cpp \
@@ -63,7 +61,16 @@ SOURCES = main.cpp \
     parser/parsertypes.cpp \
     parser/ast.cpp \
     parser/parser_value.cpp \
-    parser/spline.cpp
+    parser/spline.cpp \
+    usb/connection.cpp \
+    usb/trackdataformatter.cpp \
+    usb/dataformatter.cpp \
+    usb/axisrange.cpp \
+    widgets/machineoptions.cpp \
+    widgets/mainoptions.cpp \
+    options.cpp \
+    widgets/plotwidget.cpp \
+    widgets/optionswidget.cpp
 
 
 target.path = ./usb_machine

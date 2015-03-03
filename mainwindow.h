@@ -4,12 +4,13 @@
 #include <QMainWindow>
 #include "mainwidget.h"
 #include "customedittext.h"
-#include "optionswidget.h"
+#include "widgets/optionswidget.h"
 #include "codehighlighter.h"
 #include "searchwidget.h"
 #include "compilator.h"
-#include "usbconnection.h"
 #include "modeling/modeling.h"
+#include "usb/connection.h"
+#include "usb/trackdataformatter.h"
 
 QT_BEGIN_NAMESPACE
 class QAction;

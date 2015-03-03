@@ -1,11 +1,11 @@
 #include "mainwindow.h"
-#include "usbconnection.h"
+#include "options.h"
 
 MainWindow::MainWindow() {
     mainWidget = new MainWidget(this);
     setCentralWidget(mainWidget);
 
-    optionsWidget = new OptionsWidget(this, new QSettings());
+    optionsWidget = new OptionsWidget(this);
     optionsWidget->hide();
 
     usbConnection = new UsbConnection();
@@ -291,7 +291,7 @@ bool MainWindow::saveFile(const QString &fileName) {
                         &fileName);
 }
 
-bool MainWindow::saveDocument(QTextDocument *doc, const QString * path){
+bool MainWindow::saveDocument(QTextDocument *doc, const QString * path) {
     QFile file(*path);
     if (!file.open(QFile::WriteOnly | QFile::Text)) {
         QMessageBox::warning(this, tr("Application"),
@@ -318,7 +318,7 @@ void MainWindow::bindCurrentText(int /*i*/){
     bindTextActions();
 }
 
-void MainWindow::bindTextActions(){
+void MainWindow::bindTextActions() {
     CustomEditText* current = mainWidget->getTextEdit();
     QAction* cut = current->getCutAction();
     QAction* copy = current->getCopyAction();
@@ -380,28 +380,28 @@ void MainWindow::disconnectWidget(CustomEditText* textEdit) {
             this, SLOT(documentWasModified()));
 }
 
-void MainWindow::showOptions(){
+void MainWindow::showOptions() {
     optionsWidget->show();
 }
 
-void MainWindow::find(){
+void MainWindow::find() {
     this->searchwidget->show();
 
 }
 
-void MainWindow::replace(){
+void MainWindow::replace() {
     this->searchwidget->show();
 
 }
-void MainWindow::replaceAll(){
+void MainWindow::replaceAll() {
     this->searchwidget->show();
 }
 
-void MainWindow::manualCtrl(){
+void MainWindow::manualCtrl() {
 
 }
 
-void MainWindow::machineOff(){
+void MainWindow::machineOff() {
 
 }
 
@@ -422,10 +422,7 @@ void MainWindow::runCode() {
     if (compilator->isErrorHappen ()){
         return;
     }
-    onFinishCompilation();
-}
 
-void MainWindow::onFinishCompilation() {
     mainWidget->clearTables();
     lines_t *lines = compilator->getLines();
     foreach(line_t* i, *lines){
@@ -433,9 +430,33 @@ void MainWindow::onFinishCompilation() {
     }
 
     UsbConnection connection;
-    connection.print_info();
+    ConnectionStatus status = connection.usb_connect ();
 
+    axis_ranges_t ranges;
+    Options options;
+    AxisRange xRange(0, options.getXArea ()),
+            yRange(0, options.getYArea ()),
+            zRange(0, options.getZArea ()),
+            fRange(0, options.getFArea ());
+    ranges.insert (axis_range_pair_t("x", &xRange));
+    ranges.insert (axis_range_pair_t("y", &yRange));
+    ranges.insert (axis_range_pair_t("z", &zRange));
+    ranges.insert (axis_range_pair_t("f", &fRange));
+
+    if (status == ready) {
+        TrackDataFormatter formatter(*((frames_t*) lines), ranges);
+        connection.sendFrames (formatter);
+        statusBar()->showMessage(
+                    tr("Отправил данные в устройство %1!").arg(
+                        connection.getProductDescription ().c_str ()),
+                    2000);
+    } else {
+        statusBar()->showMessage(tr("Не смогу подслкючиться к устройству!"), 2000);
+    }
+    connection.usb_disconnect();
 //    statusBar()->showMessage(tr("Компилированы %1").arg(compilator->getLines()->size()), 2000);
+
+    onFinishCompilation();
 }
 
 void MainWindow::onModeling() {
@@ -445,25 +466,29 @@ void MainWindow::onModeling() {
     }
     lines_t *lines = compilator->getLines();
 //    statusBar()->showMessage(tr("Компилированы %1").arg(lines->size()), 2000);
-    usbConnection->print_info();
     if (lines->size() != 0) {
         modelingWidget->plotLine(lines);
         modelingWidget->show();
     }
+    onFinishCompilation();
 }
 
+void MainWindow::onFinishCompilation() {
+}
 
 void MainWindow::findInCurrent(QString regexp){
     CustomEditText* textEdit = mainWidget->getTextEdit();
     textEdit->find(regexp);
     textEdit->show();
 }
+
 void MainWindow::replaceInCurrent(QString regexp, QString text){
     CustomEditText* textEdit = mainWidget->getTextEdit();
     textEdit->insertPlainText(text);
     textEdit->find(regexp);
     textEdit->show();
 }
+
 void MainWindow::replaceAllInCurrent(QString regexp, QString text){
     CustomEditText* textEdit = mainWidget->getTextEdit();
     while(textEdit->find(regexp)) {
