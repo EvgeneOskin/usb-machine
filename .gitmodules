@@ -1,0 +1,3 @@
+[submodule "oce"]
+	path = opencascade-6.8.0
+	url = git@github.com:EvgeneOskin/oce.git

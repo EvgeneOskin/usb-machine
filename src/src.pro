@@ -68,7 +68,8 @@ HEADERS = mainwindow.h \
     modeling/abstracttrack.h \
     modeling/modelingvectortypes.h \
     modeling/tracksegment4d.h \
-    parser/compilator.h
+    parser/compilator.h \
+    igesimporter.h
 
 SOURCES = mainwindow.cpp \
     mainwidget.cpp \
@@ -108,7 +109,8 @@ SOURCES = mainwindow.cpp \
     modeling/abstracttrack.cpp \
     modeling/modelingvectortypes.cpp \
     modeling/tracksegment4d.cpp \
-    parser/compilator.cpp
+    parser/compilator.cpp \
+    igesimporter.cpp
 
 
 #QMAKE_CXXFLAGS_RELEASE += -O3
@@ -130,3 +132,21 @@ LIBS += -L ../lib -lqwtplot3d
 FORMS += \
     manualcontrol.ui \
     options.ui
+
+INCLUDEPATH += $${SRC_DIR}/opencascade-6.8.0/inc/
+LIBS += -L$${SRC_DIR}/opencascade-6.8.0-build/out/lib \
+    -lTKIGES \
+    -lTKXSBase \
+    -lTKBool \
+    -lTKShHealing \
+    -lTKBO \
+    -lTKPrim \
+    -lTKTopAlgo \
+    -lTKGeomAlgo \
+    -lTKBRep \
+    -lTKGeomBase \
+    -lTKG3d \
+    -lTKG2d \
+    -lTKMath \
+    -lTKernel \
+    -lTKOffset \

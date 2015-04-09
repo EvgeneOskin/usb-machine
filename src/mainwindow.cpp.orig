@@ -7,8 +7,12 @@
 #include <QApplication>
 
 #include "options.h"
+<<<<<<< HEAD:src/mainwindow.cpp
 #include "usb/connection.h"
+=======
+#include "usbconnection.h"
 #include "igesimporter.h"
+>>>>>>> Add OpenCASCADE lib custom repo.:mainwindow.cpp
 
 
 MainWindow::MainWindow() {
