@@ -2,6 +2,7 @@
 #define IGESIMPORTER_H
 
 #include <QString>
+#include <QStringBuilder>
 #include <IGESControl_Reader.hxx>
 #include <TopAbs_ShapeEnum.hxx>
 #include <TopExp_Explorer.hxx>
@@ -17,6 +18,8 @@ public:
     IGESImporter(const QString &fileName);
     ~IGESImporter();
     bool import();
+    void writeContent(QString &output);
+    QString output;
 
 private:
     void iterateWires();

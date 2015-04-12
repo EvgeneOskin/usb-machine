@@ -14,11 +14,11 @@ IGESImporter::~IGESImporter()
 
 bool IGESImporter::import () {
     iterateWires();
-
-    return false;
+    return true;
 }
 
 void IGESImporter::iterateWires() {
+    std::stringstream output;
     if (stat == IFSelect_RetDone) {
         Handle(TColStd_HSequenceOfTransient) list = reader.GiveList();
         reader.TransferList(list);
@@ -27,7 +27,7 @@ void IGESImporter::iterateWires() {
         TopExp_Explorer explorer;
 
         int i = 0;
-        for (explorer.Init (shape, TopAbs_EDGE, TopAbs_SHELL);
+        for (explorer.Init (shape, TopAbs_EDGE);
              explorer.More();
              explorer.Next ()) {
             Standard_Boolean isDegenerated = BRep_Tool::Degenerated ((const TopoDS_Edge&)explorer.Current ());
@@ -43,12 +43,11 @@ void IGESImporter::iterateWires() {
                     double x = point.X();
                     double y = point.Y();
                     double z = point.Z();
-                    std::cout <<  i << " "<< x << " " << y << " "<< z << '\n';
+                    output << "x="<< x << " y=" << y << " z="<< z << '\n';
                 }
             }
             i++;
         }
+        this->output = QString(output.str ().c_str ());
     }
-
-
 }

@@ -4,6 +4,7 @@
 #include "gsl_math.h"
 #include "interpolation/gsl_spline.h"
 
+
 TrackSegment::TrackSegment(double maxVelocity,
                            double velocityFactor,
                            double previousPoint,
@@ -28,6 +29,7 @@ double TrackSegment::getDeltaTimeSeconds() const {
     return deltaTimeSeconds;
 }
 
+const double TIME_PRESSITION = 1e-12;
 
 void TrackSegment::createLinearGSLSpline(gsl_spline **gslSpline) {
     const gsl_interp_type *type = gsl_interp_linear;
@@ -35,11 +37,15 @@ void TrackSegment::createLinearGSLSpline(gsl_spline **gslSpline) {
     *gslSpline = gsl_spline_alloc (type, size);
     double xa[size];
     double ya[size];
-    xa[0] = previousTimeSeconds;
     ya[0] = previousPoint;
+    xa[0] = previousTimeSeconds;
 
-    xa[1] = previousTimeSeconds + (nextValue.get_number() - previousPoint)/velocity;
     ya[1] = nextValue.get_number();
+    xa[1] = previousTimeSeconds + fabs(ya[1] - ya[0])/velocity;
+
+    if (GSL_NAN == xa[1] || xa[1] <=  (xa[0] + TIME_PRESSITION ) * (1 + TIME_PRESSITION)) {
+        xa[1] = (xa[0] + TIME_PRESSITION) * (1 + TIME_PRESSITION);
+    }
 
     gsl_spline_init(*gslSpline, xa, ya, size);
 }
@@ -91,11 +97,16 @@ void TrackSegment::multiplyVilocityFactors(double velocityFactor) {
 void TrackSegment::calculateTimeAndVelocity() {
     double tempDeltaTimeSeconds = 0.0;
     timePointsSeconds.clear ();
-    timePointsSeconds.push_back (tempDeltaTimeSeconds);
 
     if (nextValue.getType () == value_types_number){
         velocity = fabs(velocityFactor/maxVelocity);
+        if (velocity < TIME_PRESSITION) {
+            velocity = TIME_PRESSITION;
+        }
         tempDeltaTimeSeconds = fabs(nextValue.get_number ()- previousPoint)/velocity;
+        if (tempDeltaTimeSeconds < TIME_PRESSITION) {
+            tempDeltaTimeSeconds = TIME_PRESSITION;
+        }
         timePointsSeconds.push_back (tempDeltaTimeSeconds);
     } else {
         spline_nodes_t nodes = nextValue.get_spline ()->get_nodes ();
