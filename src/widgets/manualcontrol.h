@@ -32,7 +32,6 @@ private:
     const QDoubleValidator zValidator;
     const QDoubleValidator fValidator;
 
-    Ui::ManualControl* getUi();
     void applyCoordinates();
     void resetCoordinates();
 

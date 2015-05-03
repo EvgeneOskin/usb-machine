@@ -31,17 +31,13 @@ HEADERS = mainwindow.h \
     modeling/modeling.h \
     modeling/tracksegment.h \
     modeling/splinesegment.h \
-    modeling/tracksegment3d.h \
-    parser/ast.hpp \
-    parser/parser_value.hpp \
-    parser/parsertypes.hpp \
     usb/connection.h \
     usb/trackdataformatter.h \
     usb/dataformatter.h \
-    usb/usbtypes.h \
     usb/axisrange.h \
-    widgets/machineoptions.h \
-    widgets/mainoptions.h \
+    usb/trackmodelingwrapper.h \
+    usb/idgenerator.h \
+    usb/usbmesaagetypes.h \
     options.h \
     widgets/plotwidget.h \
     widgets/optionswidget.h \
@@ -64,8 +60,14 @@ HEADERS = mainwindow.h \
     gsl/vector/view.h \
     gsl/vector/gsl_vector_double.h \
     gsl/vector/gsl_vector.h \
-    parser/parserspline.hpp \
-    widgets/manualcontrol.h
+    widgets/manualcontrol.h \
+    parser/parserspline.h \
+    parser/parsertypes.h \
+    parser/ast.h \
+    parser/parser_value.h \
+    modeling/abstracttrack.h \
+    modeling/modelingvectortypes.h \
+    modeling/tracksegment4d.h
 
 SOURCES = mainwindow.cpp \
     mainwidget.cpp \
@@ -79,16 +81,17 @@ SOURCES = mainwindow.cpp \
     modeling/modeling.cpp \
     modeling/tracksegment.cpp \
     modeling/splinesegment.cpp \
-    modeling/tracksegment3d.cpp \
     parser/parsertypes.cpp \
     parser/ast.cpp \
+    parser/parserspline.cpp \
     parser/parser_value.cpp \
     usb/connection.cpp \
     usb/trackdataformatter.cpp \
     usb/dataformatter.cpp \
     usb/axisrange.cpp \
-    widgets/machineoptions.cpp \
-    widgets/mainoptions.cpp \
+    usb/trackmodelingwrapper.cpp \
+    usb/idgenerator.cpp \
+    usb/usbmesaagetypes.cpp \
     options.cpp \
     widgets/plotwidget.cpp \
     widgets/optionswidget.cpp \
@@ -101,8 +104,10 @@ SOURCES = mainwindow.cpp \
     gsl/linalg/tridiag.c \
     gsl/vector/view_source.c \
     gsl/vector/view.c \
-    parser/parserspline.cpp \
-    widgets/manualcontrol.cpp
+    widgets/manualcontrol.cpp \
+    modeling/abstracttrack.cpp \
+    modeling/modelingvectortypes.cpp \
+    modeling/tracksegment4d.cpp
 
 
 #QMAKE_CXXFLAGS_RELEASE += -O3
@@ -122,4 +127,5 @@ win32 {
 LIBS += -L../lib/ -lqwtplot3d
 
 FORMS += \
-    manualcontrol.ui
+    manualcontrol.ui \
+    options.ui

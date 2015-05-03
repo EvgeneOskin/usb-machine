@@ -45,6 +45,11 @@ private:
     libusb_device_handle *handler;
     bool is_busy;
 
+    ConnectionStatus initInterfaceAndMaxPackageSize();
+    int interface;
+    int altSettings;
+    size_t maxPackageSize;
+
 signals:
 
 public slots:

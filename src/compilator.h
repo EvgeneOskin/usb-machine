@@ -1,7 +1,7 @@
 #ifndef COMPILATOR_H
 #define COMPILATOR_H
 
-#include "parser/parsertypes.hpp"
+#include "parser/parsertypes.h"
 #include <string>
 #include <cstdio>
 #include <QObject>

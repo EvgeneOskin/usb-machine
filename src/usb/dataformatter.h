@@ -1,15 +1,13 @@
 #ifndef DATAFORMATTER
 #define DATAFORMATTER
 
-#include "usbtypes.h"
+#include "usbmesaagetypes.h"
 
 class DataFormatter {
 
 public:
-
-    virtual size_t formatFrame(
-            size_t frameIndex, byte pureData[], size_t maxSize) = 0;
-    virtual size_t getFrameCount() = 0;
+    virtual size_t getPackageCount() = 0;
+    virtual size_t format(size_t index, uint8_t pureData[], size_t maxSize) = 0;
 };
 
 #endif // DATAFORMATTER

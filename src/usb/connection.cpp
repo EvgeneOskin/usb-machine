@@ -1,11 +1,10 @@
 #include "connection.h"
-#include "stdio.h"
 
 UsbConnection::UsbConnection(QObject *parent) :
     QObject(parent), handler(NULL), is_busy(false) {
 
     libusb_init(&context);
-    libusb_set_debug(context, 2);
+    libusb_set_debug(NULL, 3);
 }
 
 UsbConnection::~UsbConnection() {
@@ -26,7 +25,7 @@ ConnectionStatus UsbConnection::usb_connect() {
             int error = libusb_open(list[i], &handler);
 
             if (error) {
-                printf("Can not open device.\n");
+                qCritical("Can not open device.\n");
             }
             device = list[i];
             libusb_ref_device (device);
@@ -35,6 +34,8 @@ ConnectionStatus UsbConnection::usb_connect() {
     }
     libusb_free_device_list(list, 1);
     if (handler) {
+        initInterfaceAndMaxPackageSize();
+//        print_info();
         return ready;
     } else {
         return disconnected;
@@ -59,73 +60,94 @@ ConnectionStatus UsbConnection::getStatus() {
     }
 }
 
-void resetByteArray(byte array[], size_t size, byte value) {
-    for (size_t i = 0; i < size; i++) {
-        array[i] = value;
+void resetByteArray(uint8_t array[], size_t size, uint8_t value) {
+    memset (array, value, size);
+}
+
+int isSupporrtedInterfaceDesc(libusb_interface_descriptor *interface) {
+    return interface->bInterfaceClass == 0x0A &&
+            interface->bInterfaceSubClass == 0x00 &&
+            interface->bInterfaceProtocol == 0x00;
+}
+
+ConnectionStatus UsbConnection::initInterfaceAndMaxPackageSize() {
+    libusb_config_descriptor *config_desc;
+    int error_config = libusb_get_active_config_descriptor(device, &config_desc);
+    if (error_config) {
+        qCritical("Error get config. s\n", libusb_error_name(error_config));
+        return access_denied;
     }
+    for (int i_interface = 0; i_interface < config_desc->bNumInterfaces; i_interface++) {
+        for (int i_altinterface = 0;
+             i_altinterface < config_desc->interface[i_interface].num_altsetting;
+            i_altinterface++) {
+            libusb_interface_descriptor alt_settings = config_desc->interface[i_interface].altsetting[i_altinterface];
+            if (isSupporrtedInterfaceDesc(&alt_settings)) {
+                this->interface = i_interface;
+                this->altSettings = i_altinterface;
+                libusb_endpoint_descriptor ep_desc = alt_settings.endpoint[0];
+                this->maxPackageSize = ep_desc.wMaxPacketSize;
+            }
+        }
+    }
+    libusb_free_config_descriptor(config_desc);
+    config_desc = NULL;
+    return ready;
 }
 
 ConnectionStatus UsbConnection::sendFrames(DataFormatter &formatter) {
-    byte * bytesToSend = new byte[MAX_SEND_BYTES];
-    size_t framesCount = formatter.getFrameCount();
-    int dataSize = 0;
     int error = 0;
-    int interface = 0;
-    libusb_config_descriptor *config_desc;
 
-    error = libusb_get_active_config_descriptor(device, &config_desc);
-
-    for (int i_interface = 0; i_interface < config_desc->bNumInterfaces; i_interface++) {
-        interface = i_interface;
-    }
-    libusb_free_config_descriptor(config_desc);
-
+    qDebug("Activating interfaces, %d", interface);
     error = libusb_claim_interface(handler, interface);
-
     if (error) {
-        printf("Error set interface.\n");
+        qCritical("Error set interface. %s\n", libusb_error_name(error));
         return access_denied;
     }
 
-    for (size_t i = 0; i < framesCount; i++) {
-        dataSize = formatter.formatFrame(i, bytesToSend, MAX_SEND_BYTES);
-
+    uint8_t * bytesToSend = new uint8_t[maxPackageSize];
+    uint8_t * recivedBytes = new uint8_t[maxPackageSize];
+    size_t packageCount = formatter.getPackageCount();
+    qDebug("PackageCount: %d", packageCount);
+    for (size_t i = 0; i < packageCount; i++) {
+        int dataSize = formatter.format(i, bytesToSend, maxPackageSize);
         int actualLength = 0;
-
-        error = libusb_interrupt_transfer(handler, CDC_OUT_EP, bytesToSend, dataSize, &actualLength, 0);
+        error = libusb_bulk_transfer(handler, CDC_OUT_EP, bytesToSend, dataSize, &actualLength, 0);
         if (!error && actualLength == dataSize) {
-            // results of the transaction can now be found in the data buffer
-            // parse them here and report button press
-            printf("Transfered: {");
-            for (size_t transfered_i = 0; transfered_i < actualLength; transfered_i++) {
-                printf("%x, ", *(bytesToSend + transfered_i));
-            }
-            printf("}\n");
+            qDebug("Package %d, transfered dize: %d", i, actualLength);
         } else {
-            printf("Can not send data LIBUSB_ENDPOINT_OUT. %d\n", error);
+            qCritical("Can not send data LIBUSB_ENDPOINT_OUT. %s\n", libusb_error_name(error));
+            delete[] bytesToSend;
+            return access_denied;
         }
-        resetByteArray(bytesToSend, MAX_SEND_BYTES, 0x00);
 
-        actualLength = 0;
-        error = libusb_interrupt_transfer(handler, CDC_IN_EP, bytesToSend, MAX_SEND_BYTES, &actualLength, 0);
+        resetByteArray(bytesToSend, dataSize, 0x00);
+
+        error = libusb_bulk_transfer(handler, CDC_IN_EP, recivedBytes, maxPackageSize, &actualLength, 0);
         if (!error) {
-            // results of the transaction can now be found in the data buffer
-            // parse them here and report button press
-            printf("Recieved: {");
-            for (size_t recieved_i = 0; recieved_i < actualLength; recieved_i++) {
-                printf("%x, ", *(bytesToSend + recieved_i));
-            }
-            printf("}\n");
+            qDebug("Recieved data size: %d", actualLength);
         } else {
-            printf("Can not send data LIBUSB_ENDPOINT_IN. %d\n", error);
+            qCritical("Can not send data LIBUSB_ENDPOINT_IN. %s\n", libusb_error_name(error));
         }
-
-        resetByteArray(bytesToSend, MAX_SEND_BYTES, 0x00);
+        resetByteArray(recivedBytes, maxPackageSize, 0x00);
     }
+    delete[] bytesToSend;
+    delete[] recivedBytes;
+
+//    bool waitForReponse = true;
+//    while (waitForReponse) {
+//        int actualLength = 0;
+//        error = libusb_bulk_transfer(handler, CDC_IN_EP, recivedBytes, maxPackageSize, &actualLength, 0);
+//        if (!error) {
+//            qDebug("Recieved data size: %d", actualLength);
+//        } else {
+//            qCritical("Can not send data LIBUSB_ENDPOINT_IN. %s\n", libusb_error_name(error));
+//        }
+//        resetByteArray(recivedBytes, maxPackageSize, 0x00);
+//        waitForReponse = false;
+//    }
 
     libusb_release_interface(handler, interface);
-    delete[] bytesToSend;
-
     return ready;
 }
 
@@ -165,73 +187,70 @@ void UsbConnection::print_info() {
     }
     libusb_get_device_descriptor(device, &desc);
 
-    //if (error_config) {
-    //    continue;
-    //}
     unsigned char data[255] = {};
     int response = libusb_get_string_descriptor_ascii (handler, desc.iProduct, data, sizeof(data));
-    printf("Product Description: %s|\n", response, data);
+    qDebug("Product Description: %s|\n", data);
     response = libusb_get_string_descriptor_ascii (handler, desc.iManufacturer, data, sizeof(data));
-    printf("Manufacturer Description: %s|\n", response, data);
+    qDebug("Manufacturer Description: %s|\n", data);
     libusb_get_string_descriptor_ascii (handler, desc.iSerialNumber, data, sizeof(data));
-    printf("SerialNumber Description: %s|\n", response, data);
+    qDebug("SerialNumber Description: %s|\n", data);
 
-    printf("\nbegin descriptor\n");
-    printf("\tport: %d\n", libusb_get_port_number(device));
-    printf("\tbus_num: %d\n", libusb_get_bus_number(device));
-    printf("\taddress: %d\n", libusb_get_device_address(device));
-    printf("\tspeed: %d\n", libusb_get_device_speed(device));
-    printf("\tClass: %d\n", desc.bDeviceClass);
-    printf("\tSubClass: %d\n", desc.bDeviceSubClass);
-    printf("\tDeviceProtocol: %d\n", desc.bDeviceProtocol);
-    printf("\tidVendor: %d\n", desc.idVendor);
-    printf("\tidProduct: %d\n", desc.idProduct);
-    printf("\tiManufacturer: %d\n", desc.iManufacturer);
-    printf("\tiProduct: %d\n", desc.iProduct);
-    printf("\tiSerialNumber: %d\n", desc.iSerialNumber);
-    printf("\tbMaxPacketSize0: %d\n", desc.bMaxPacketSize0);
-    printf("\tbNumConfigurations: %d\n", desc.bNumConfigurations);
-    printf("\tconfigDescriptor:\n");
+    qDebug("\nbegin descriptor\n");
+    qDebug("\tport: %d\n", libusb_get_port_number(device));
+    qDebug("\tbus_num: %d\n", libusb_get_bus_number(device));
+    qDebug("\taddress: %d\n", libusb_get_device_address(device));
+    qDebug("\tspeed: %d\n", libusb_get_device_speed(device));
+    qDebug("\tClass: %d\n", desc.bDeviceClass);
+    qDebug("\tSubClass: %d\n", desc.bDeviceSubClass);
+    qDebug("\tDeviceProtocol: %d\n", desc.bDeviceProtocol);
+    qDebug("\tidVendor: %d\n", desc.idVendor);
+    qDebug("\tidProduct: %d\n", desc.idProduct);
+    qDebug("\tiManufacturer: %d\n", desc.iManufacturer);
+    qDebug("\tiProduct: %d\n", desc.iProduct);
+    qDebug("\tiSerialNumber: %d\n", desc.iSerialNumber);
+    qDebug("\tbMaxPacketSize0: %d\n", desc.bMaxPacketSize0);
+    qDebug("\tbNumConfigurations: %d\n", desc.bNumConfigurations);
+    qDebug("\tconfigDescriptor:\n");
 
 
     error_config = libusb_get_active_config_descriptor(device, &config_desc);
     if (error_config) {
         if (error_config == LIBUSB_ERROR_NOT_FOUND) {
-            printf("Error config not founds\n");
+            qDebug("Error config not founds\n");
         } else {
-            printf("Error in config %d\n", error_config);
+            qDebug("Error in config %s\n", libusb_error_name (error_config));
         }
     } else {
-
-        printf("\tiConfiguration: %d\n", config_desc->iConfiguration);
-        printf("\tbNumInterface: %d\n", config_desc->bNumInterfaces);
-        printf("\tbmAttributes: %d\n", config_desc->bmAttributes);
+        qDebug("\tiConfiguration: %d\n", config_desc->iConfiguration);
+        qDebug("\tbNumInterface: %d\n", config_desc->bNumInterfaces);
+        qDebug("\tbmAttributes: %d\n", config_desc->bmAttributes);
         for (int i_interface = 0; i_interface < config_desc->bNumInterfaces; i_interface++) {
             for (int i_altinterface = 0;
                  i_altinterface < config_desc->interface[i_interface].num_altsetting;
                 i_altinterface++) {
                 libusb_interface_descriptor alt_settings = config_desc->interface[i_interface].altsetting[i_altinterface];
-                printf("\tbInterfaceClass[%d][%d]: %d\n", i_interface, i_altinterface,
-                    alt_settings.bInterfaceClass);
-
-                printf("\tbInterfaceNumber[%d][%d]: %d\n", i_interface, i_altinterface,
+                qDebug("\tbInterfaceNumber[%d][%d]: %d\n", i_interface, i_altinterface,
                     alt_settings.bInterfaceNumber);
-                printf("\tbInterfaceProtocol[%d][%d]: %d\n", i_interface, i_altinterface,
+                qDebug("\tbInterfaceClass[%d][%d]: %d\n", i_interface, i_altinterface,
+                    alt_settings.bInterfaceClass);
+                qDebug("\bInterfaceSubClass[%d][%d]: %d\n", i_interface, i_altinterface,
+                    alt_settings.bInterfaceSubClass);
+                qDebug("\tbInterfaceProtocol[%d][%d]: %d\n", i_interface, i_altinterface,
                     alt_settings.bInterfaceProtocol);
-                printf("\textra[%d][%d]: %s\n", i_interface, i_altinterface,
+                qDebug("\textra[%d][%d]: %s\n", i_interface, i_altinterface,
                     alt_settings.extra);
                 for (int i_ep = 0; i_ep < alt_settings.bNumEndpoints; i_ep++) {
                     libusb_endpoint_descriptor ep_desc = alt_settings.endpoint[i_ep];
-                    printf("\t\tbEndpointAddress[%d][%d][%d]: %d (in=%d / out=%d)\n",
+                    qDebug("\t\tbEndpointAddress[%d][%d][%d]: %d (in=%d / out=%d)\n",
                         i_interface, i_altinterface, i_ep,
                         ep_desc.bEndpointAddress, LIBUSB_ENDPOINT_IN, LIBUSB_ENDPOINT_OUT);
-                    printf("\t\tbDescriptorType[%d][%d][%d]: %d\n", i_interface, i_altinterface, i_ep,
+                    qDebug("\t\tbDescriptorType[%d][%d][%d]: %d\n", i_interface, i_altinterface, i_ep,
                         ep_desc.bDescriptorType);
-                    printf("\t\tbmAttributes[%d][%d][%d]: %d\n", i_interface, i_altinterface, i_ep,
-                        ep_desc.bmAttributes);
-                    printf("\t\textra[%d][%d][%d]: %d\n", i_interface, i_altinterface, i_ep,
+                    qDebug("\t\tbmAttributes[%d][%d][%d]: %d\n", i_interface, i_altinterface, i_ep,
+                           ep_desc.bmAttributes);
+                    qDebug("\t\textra[%d][%d][%d]: %d\n", i_interface, i_altinterface, i_ep,
                         ep_desc.extra_length);
-                    printf("\t\tbSynchAddress[%d][%d][%d]: %d\n", i_interface, i_altinterface, i_ep,
+                    qDebug("\t\tbSynchAddress[%d][%d][%d]: %d\n", i_interface, i_altinterface, i_ep,
                         ep_desc.bSynchAddress);
                 }
             }

@@ -1,8 +1,7 @@
-#include "math.h"
 #include "axisrange.h"
+#include <algorithm>
 
-AxisRange::AxisRange(double down, double up, QObject *parent)
-    : QObject(parent) {
+AxisRange::AxisRange(double down, double up) {
 
     this->down = std::min(down, up);
     this->up = std::max(up, down);
@@ -11,19 +10,12 @@ AxisRange::AxisRange(double down, double up, QObject *parent)
 
 AxisRange::~AxisRange() {}
 
-bool AxisRange::setPositionInRange(double value, byte* byte2Array) {
-    if (down < value && value < up) {
-        short b2 = round((value - down)/diff*0xffff);
-        byte2Array[0] = (byte) b2 & 0xff;
-        byte2Array[1] = (byte) (b2 >> 8) & 0xff;
-        return true;
+uint16_t AxisRange::setPositionInRange(double value) {
+    if (!diff || value > up) {
+        return 0xFFFF;
     } else if (value < down) {
-        byte2Array[0] = 0x00;
-        byte2Array[1] = 0x00;
-        return false;
+        return 0;
     } else {
-        byte2Array[0] = 0xff;
-        byte2Array[1] = 0xff;
-        return false;
+        return round((value - down)/diff*0xffff);
     }
 }

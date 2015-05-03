@@ -4,7 +4,7 @@
 #include "QtWidgets"
 #include "QRegExp"
 #include "customedittext.h"
-#include "parser/parsertypes.hpp"
+#include "parser/parsertypes.h"
 
 class MainWidget : public QWidget {
     Q_OBJECT

@@ -1,17 +1,14 @@
 #ifndef AXISRANGE_H
 #define AXISRANGE_H
 
-#include <QObject>
+#include "inttypes.h"
 
-typedef unsigned char byte;
+class AxisRange{
 
-class AxisRange : public QObject {
-
-    Q_OBJECT
 public:
-    AxisRange(double down, double up, QObject *parent = 0);
+    AxisRange(double down, double up);
     virtual ~AxisRange();
-    bool setPositionInRange(double value, byte* byte2Array);
+    uint16_t setPositionInRange(double value);
 
 private:
     double down;

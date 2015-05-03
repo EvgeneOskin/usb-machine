@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "options.h"
+#include "usb/connection.h"
 
 MainWindow::MainWindow() {
     mainWidget = new MainWidget(this);
@@ -407,7 +408,7 @@ void MainWindow::machineOff() {
 }
 
 void MainWindow::showMessageBox(QString error) {
-    QMessageBox::warning (this, NULL, error);
+    QMessageBox::warning (this, QString("Синтаксическая ошибка"), error);
 }
 
 void MainWindow::compile() {
@@ -433,24 +434,48 @@ void MainWindow::runCode() {
     UsbConnection connection;
     ConnectionStatus status = connection.usb_connect ();
 
-    axis_ranges_t ranges;
+    TYPE_VECTOR(AxisRangePtr) ranges;
     Options options;
-    AxisRange xRange(0, options.getXArea ()),
-            yRange(0, options.getYArea ()),
-            zRange(0, options.getZArea ()),
-            fRange(0, options.getFArea ());
-    ranges.insert (axis_range_pair_t("x", &xRange));
-    ranges.insert (axis_range_pair_t("y", &yRange));
-    ranges.insert (axis_range_pair_t("z", &zRange));
-    ranges.insert (axis_range_pair_t("f", &fRange));
+    ranges.x = AxisRangePtr(new AxisRange(0, options.getXArea ()));
+    ranges.y = AxisRangePtr(new AxisRange(0, options.getYArea ()));
+    ranges.z = AxisRangePtr(new AxisRange(0, options.getZArea ()));
+    ranges.f = AxisRangePtr(new AxisRange(0, options.getFArea ()));
+
+    TYPE_VECTOR(double) maxVelocity;
+    TYPE_VECTOR(uint16_t) coordinateScale;
+    TYPE_VECTOR(uint16_t) velocityScale;
+
+    coordinateScale.x = options.getXScale ();
+    velocityScale.x = options.getVelocityXScale ();
+    maxVelocity.x = options.getMaxVelocityX ();
+
+    coordinateScale.y = options.getYScale ();
+    velocityScale.y = options.getVelocityYScale ();
+    maxVelocity.y = options.getMaxVelocityY ();
+
+    coordinateScale.z = options.getZScale ();
+    velocityScale.z = options.getVelocityZScale ();
+    maxVelocity.z = options.getMaxVelocityZ ();
+
+    coordinateScale.f = options.getFScale ();
+    velocityScale.f = options.getVelocityFScale ();
+    maxVelocity.f = options.getMaxVelocityF ();
 
     if (status == ready) {
-        TrackDataFormatter formatter(*((frames_t*) lines), ranges);
-        connection.sendFrames (formatter);
-        statusBar()->showMessage(
-                    tr("Отправил данные в устройство %1!").arg(
-                        connection.getProductDescription ().c_str ()),
-                    2000);
+        TrackDataFormatter formatter(
+                    lines, maxVelocity,
+                    coordinateScale, velocityScale,
+                    ranges);
+        ConnectionStatus status = connection.sendFrames (formatter);
+        if (status != ready) {
+            statusBar()->showMessage(tr("Не смог отправить данные!"), 2000);
+
+        } else {
+            statusBar()->showMessage(
+                        tr("Отправил данные в устройство %1!").arg(
+                            connection.getProductDescription ().c_str ()),
+                        2000);
+        }
     } else {
         statusBar()->showMessage(tr("Не смогу подслкючиться к устройству!"), 2000);
     }

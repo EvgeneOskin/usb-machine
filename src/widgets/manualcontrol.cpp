@@ -5,25 +5,21 @@ ManualControl::ManualControl(QWidget *parent)
     : QDialog(parent), ui(new Ui::ManualControl),
       xValidator(), yValidator(), zValidator(), fValidator() {
 
-    getUi()->setupUi (this);
-    getUi()->coordinateXEdit->setValidator (&xValidator);
-    getUi()->coordinateYEdit->setValidator (&yValidator);
-    getUi()->coordinateZEdit->setValidator (&zValidator);
-    getUi()->coordinateFEdit->setValidator (&fValidator);
+    ui->setupUi (this);
+    ui->coordinateXEdit->setValidator (&xValidator);
+    ui->coordinateYEdit->setValidator (&yValidator);
+    ui->coordinateZEdit->setValidator (&zValidator);
+    ui->coordinateFEdit->setValidator (&fValidator);
 
-    connect(getUi()->buttonBox, SIGNAL(clicked), this, SLOT(buttonClicked));
-    connect(getUi()->buttonBox, SIGNAL(refected), this, SLOT(hide));
+    connect(ui->buttonBox, SIGNAL(clicked(QAbstractButton*)), this, SLOT(buttonClicked(QAbstractButton*)));
+    connect(ui->buttonBox, SIGNAL(rejected()), this, SLOT(hide()));
 }
 
 ManualControl::~ManualControl() {
 }
 
-Ui::ManualControl* ManualControl::getUi () {
-    return ui.get();
-}
-
 void ManualControl::buttonClicked(QAbstractButton* button) {
-    switch(getUi()->buttonBox->standardButton (button)) {
+    switch(ui->buttonBox->standardButton (button)) {
     case QDialogButtonBox::Apply:
         applyCoordinates();
         break;
@@ -43,10 +39,10 @@ double getDoubleFromEdit(QLineEdit *edit) {
 void ManualControl::applyCoordinates() {
     double x, y, z, f;
 
-    x = getDoubleFromEdit(getUi()->coordinateXEdit);
-    y = getDoubleFromEdit(getUi()->coordinateYEdit);
-    z = getDoubleFromEdit(getUi()->coordinateZEdit);
-    f = getDoubleFromEdit(getUi()->coordinateFEdit);
+    x = getDoubleFromEdit(ui->coordinateXEdit);
+    y = getDoubleFromEdit(ui->coordinateYEdit);
+    z = getDoubleFromEdit(ui->coordinateZEdit);
+    f = getDoubleFromEdit(ui->coordinateFEdit);
 
     emit apply(x, y, z, f);
 }
@@ -62,8 +58,8 @@ void setDoubleToEdit(double value, QLineEdit *edit) {
 }
 
 void ManualControl::reset(double x, double y, double z, double f) {
-    setDoubleToEdit(x, getUi()->coordinateXEdit);
-    setDoubleToEdit(y, getUi()->coordinateYEdit);
-    setDoubleToEdit(z, getUi()->coordinateZEdit);
-    setDoubleToEdit(f, getUi()->coordinateFEdit);
+    setDoubleToEdit(x, ui->coordinateXEdit);
+    setDoubleToEdit(y, ui->coordinateYEdit);
+    setDoubleToEdit(z, ui->coordinateZEdit);
+    setDoubleToEdit(f, ui->coordinateFEdit);
 }

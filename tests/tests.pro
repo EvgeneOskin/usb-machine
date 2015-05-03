@@ -10,10 +10,13 @@ QT += testlib
 CONFIG   -= app_bundle
 
 SOURCES += main.cpp \
-    testoptions.cpp
+    testoptions.cpp \
+    usb/testtrackdataformatter.cpp
 
 HEADERS += \
-    testoptions.h
+    testoptions.h \
+    testtrackdataformatter.h \
+    usb/testtrackdataformatter.h
 
 #QMAKE_CXXFLAGS_RELEASE += -O3
 

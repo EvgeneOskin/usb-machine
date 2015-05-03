@@ -1,0 +1,6 @@
+#include "modelingvectortypes.h"
+
+DECLARE_GET_VECTOR_COORDINATE(double)
+DECLARE_GET_VECTOR_COORDINATE(ValuePtr)
+DECLARE_GET_VECTOR_COORDINATE(gsl_spline_ptr)
+

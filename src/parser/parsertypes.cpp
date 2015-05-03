@@ -2,7 +2,7 @@
 #include "stdlib.h"
 #include <string>
 
-#include "parsertypes.hpp"
+#include "parsertypes.h"
 #include "grammar_yacc.h"
 
 Parser::Parser() {
