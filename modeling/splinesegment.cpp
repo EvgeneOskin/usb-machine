@@ -1,9 +1,11 @@
 #include "splinesegment.h"
+#include <cmath>
 
-#include <gsl/gsl_vector.h>
-#include <gsl/gsl_spline.h>
-#include <gsl/gsl_roots.h>
-#include <gsl/gsl_nan.h>
+#include <vector/gsl_vector.h>
+#include <interpolation/gsl_spline.h>
+#include <gsl_nan.h>
+
+#define GSL_MAX(a,b)  (a > b ? a : b)
 
 SplineSegment::SplineSegment(double x[], gsl_spline *spline,
                              size_t size, size_t startIndex) :
@@ -37,7 +39,6 @@ void SplineSegment::calculateMaxVelocity() {
     size_t minSplineSize = gsl_spline_min_size (spline);
 
     if (size < minSplineSize) {
-        printf ("Size is to small!");
         return;
     }
 

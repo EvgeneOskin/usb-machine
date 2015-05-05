@@ -7,7 +7,7 @@
 #include "stdio.h"
 #include "parser/parsertypes.hpp"
 #include "parser/ast.hpp"
-#include "parser/spline.hpp"
+#include "parser/parserspline.hpp"
 
     void flexrestart(FILE*);
     int grammarparse(Parser*);

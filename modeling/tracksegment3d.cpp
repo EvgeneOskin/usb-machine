@@ -1,6 +1,6 @@
 #include "tracksegment3d.h"
 
-#include "gsl/gsl_math.h"
+#include "gsl_math.h"
 
 TrackSegment3D::TrackSegment3D(
         double previousX, double previousY, double previousZ,

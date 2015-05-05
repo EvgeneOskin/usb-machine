@@ -2,7 +2,7 @@
 #define AST_H
 
 #include "parsertypes.hpp"
-#include "spline.hpp"
+#include "parserspline.hpp"
 
 typedef enum {
   ast_var,

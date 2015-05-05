@@ -4,8 +4,8 @@
 #include <vector>
 #include "parser/parser_value.hpp"
 
-#include "gsl/gsl_spline.h"
-#include "gsl/gsl_statistics_double.h"
+#include "interpolation/gsl_spline.h"
+//#include "gsl/gsl_statistics_double.h"
 
 class TrackSegment {
 
