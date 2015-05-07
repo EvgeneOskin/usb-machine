@@ -2,7 +2,7 @@
 #define SPLINESEGMENT_H
 
 #include "string.h"
-#include "gsl/gsl_spline.h"
+#include "interpolation/gsl_spline.h"
 
 #define ZERO_FIND_ACCURACY 1e-7
 #define ZERO_FIND_MAX_ITER 100

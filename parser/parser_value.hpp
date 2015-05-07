@@ -1,7 +1,7 @@
 #ifndef PARSER_VALUE_H
 #define PARSER_VALUE_H
 
-#include "spline.hpp"
+#include "parserspline.hpp"
 
 typedef enum {
   value_types_number = 0,

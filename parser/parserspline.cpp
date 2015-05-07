@@ -1,4 +1,4 @@
-#include "spline.hpp"
+#include "parserspline.hpp"
 #include <iostream>
 
 Spline::Spline() : mType(spline_cubic) {}

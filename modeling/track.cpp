@@ -1,7 +1,7 @@
 #include "track.h"
 #include <iostream>
 #include <iomanip>
-#include "gsl/gsl_spline.h"
+#include "interpolation/gsl_spline.h"
 
 Track::Track(lines_t* lines, QString projection, Qwt3D::SurfacePlot& pw)
     : Qwt3D::ParametricSurface(pw), x(0), y(0), z(0),

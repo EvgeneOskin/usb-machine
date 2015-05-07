@@ -3,7 +3,7 @@
 
 #include "tracksegment.h"
 #include "parser/parser_value.hpp"
-#include "gsl/gsl_spline.h"
+#include "interpolation/gsl_spline.h"
 
 class TrackSegment3D {
 
