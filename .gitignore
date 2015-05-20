@@ -1,0 +1,11 @@
+*.dll
+*.exe
+*.OBJ
+*.o
+*.obj
+*.lib
+*.LIB
+*.bak
+*.BAK
+*~
+*.pro.user
