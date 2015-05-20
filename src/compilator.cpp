@@ -1,3 +1,4 @@
+#include "grammar_yacc.h"
 #include "compilator.h"
 
 extern FILE* yyin;

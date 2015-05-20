@@ -1,7 +1,7 @@
 #ifndef COMPILATOR_H
 #define COMPILATOR_H
 
-#include "grammar_yacc.h"
+#include "parser/parsertypes.hpp"
 #include <string>
 #include <cstdio>
 #include <QObject>
