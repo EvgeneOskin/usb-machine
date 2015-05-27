@@ -11,6 +11,7 @@ MainWindow::MainWindow() {
     usbConnection = new UsbConnection();
     codeHighlighter = new CodeHighlighter(this);
     searchwidget = new SearchWidget(this);
+    manualControlDialog = new ManualControl(this);
     modelingWidget = new ModelingWidget();
 
     createActions();
@@ -169,7 +170,7 @@ void MainWindow::createActions() {
     modelAction = new QAction(tr("&Моделировать"), this);
     connect(modelAction, SIGNAL(triggered()), this, SLOT(onModeling()));
 
-    manualCtrlAction = new QAction(tr("Ручсное &управление"), this);
+    manualCtrlAction = new QAction(tr("Ручное &управление"), this);
     connect(manualCtrlAction, SIGNAL(triggered()), this, SLOT(manualCtrl()));
 
     machineOffAction = new QAction(tr("&Выключить машину"), this);
@@ -398,7 +399,7 @@ void MainWindow::replaceAll() {
 }
 
 void MainWindow::manualCtrl() {
-
+    manualControlDialog->show();
 }
 
 void MainWindow::machineOff() {
