@@ -5,6 +5,7 @@ TARGET = usb_machine
 CONFIG += qt warn_on opengl
 QT += widgets core opengl
 
+
 DESTDIR = ../lib
 
 CONFIG += lex
@@ -63,7 +64,8 @@ HEADERS = mainwindow.h \
     gsl/vector/view.h \
     gsl/vector/gsl_vector_double.h \
     gsl/vector/gsl_vector.h \
-    parser/parserspline.hpp
+    parser/parserspline.hpp \
+    widgets/manualcontrol.h
 
 SOURCES = mainwindow.cpp \
     mainwidget.cpp \
@@ -99,7 +101,8 @@ SOURCES = mainwindow.cpp \
     gsl/linalg/tridiag.c \
     gsl/vector/view_source.c \
     gsl/vector/view.c \
-    parser/parserspline.cpp
+    parser/parserspline.cpp \
+    widgets/manualcontrol.cpp
 
 
 #QMAKE_CXXFLAGS_RELEASE += -O3
@@ -108,7 +111,7 @@ SOURCES = mainwindow.cpp \
 win32 {
 #    LIBS += -L"C:/gnuwin32/lib" -lgsl -lgslcblas
     LIBS += -lglew32
-    LIBS += -L$${SRC_DIR}/../static/lib/ -lusb-1.0
+    LIBS += -L$${SRC_DIR}/static/lib/ -lusb-1.0
 #    INCLUDEPATH += "C:/gnuwin32/include"
 } else {
     LIBS += -lusb-1.0
@@ -117,3 +120,6 @@ win32 {
 }
 
 LIBS += -L../lib/ -lqwtplot3d
+
+FORMS += \
+    manualcontrol.ui

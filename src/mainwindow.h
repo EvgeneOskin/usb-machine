@@ -5,6 +5,7 @@
 #include "mainwidget.h"
 #include "customedittext.h"
 #include "widgets/optionswidget.h"
+#include "widgets/manualcontrol.h"
 #include "codehighlighter.h"
 #include "searchwidget.h"
 #include "compilator.h"
@@ -109,6 +110,8 @@ private:
     SearchWidget* searchwidget;
     UsbConnection* usbConnection;
     ModelingWidget* modelingWidget;
+    ManualControl* manualControlDialog;
+
 };
 //! [0]
 
