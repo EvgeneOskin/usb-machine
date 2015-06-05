@@ -1,4 +1,4 @@
-#include "ast.hpp"
+#include "ast.h"
 #include "grammar_yacc.h"
 #include <iostream>
 

@@ -5,9 +5,9 @@
 #include "math.h"
 #include <iostream>
 #include "stdio.h"
-#include "parser/parsertypes.hpp"
-#include "parser/ast.hpp"
-#include "parser/parserspline.hpp"
+#include "parser/parsertypes.h"
+#include "parser/ast.h"
+#include "parser/parserspline.h"
 
     void flexrestart(FILE*);
     int grammarparse(Parser*);

@@ -1,8 +1,8 @@
 #ifndef AST_H
 #define AST_H
 
-#include "parsertypes.hpp"
-#include "parserspline.hpp"
+#include "parsertypes.h"
+#include "parserspline.h"
 
 typedef enum {
   ast_var,
@@ -38,5 +38,5 @@ ast_line_t* new_ast_line(ast_variable_t* var);
 ast_line_t* add_to_ast_line(ast_line_t * line, ast_variable_t* var);
 ast_lines_t* new_ast_lines(ast_line_t* new_vars);
 ast_lines_t* add_to_ast_lines(ast_line_t* new_vars,
-			      ast_lines_t* old_vars);
+                  ast_lines_t* old_vars);
 #endif //AST_H

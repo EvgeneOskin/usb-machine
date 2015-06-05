@@ -2,10 +2,12 @@
 #define OPTIONSWIDGET_H
 
 #include <QtWidgets>
-#include "widgets/machineoptions.h"
-#include "widgets/mainoptions.h"
-
+#include <memory>
 #include "options.h"
+
+namespace Ui {
+    class OptionsDialog;
+}
 
 
 class OptionsWidget : public QDialog {
@@ -16,34 +18,38 @@ public:
     ~OptionsWidget();
 
 private:
-    Options *options;
+    std::unique_ptr<Options> options;
+    std::unique_ptr<Ui::OptionsDialog> ui;
 
-    QVBoxLayout* layout;
+    QDoubleValidator xLengthValidator;
+    QIntValidator xScaleValidator;
+    QIntValidator xVelocityScaleValidator;
+    QDoubleValidator xMaxVelocityValidator;
 
-    QTabWidget* tabWidget;
-    MainOptions *mainWidget;
-    MachineOptions* machineWidget;
-    QVBoxLayout* unitsLayout;
-    QVBoxLayout* compileLayout;
-    QVBoxLayout* mainLayout;
-    QVBoxLayout* warningsLayout;
-    QVBoxLayout* editorLayout;
+    QDoubleValidator yLengthValidator;
+    QIntValidator yScaleValidator;
+    QIntValidator yVelocityScaleValidator;
+    QDoubleValidator yMaxVelocityValidator;
 
-    QHBoxLayout* buttonsLayout;
-    QPushButton* ok;
-    QPushButton* cancel;
-    QPushButton* apply;
+    QDoubleValidator zLengthValidator;
+    QIntValidator zScaleValidator;
+    QIntValidator zVelocityScaleValidator;
+    QDoubleValidator zMaxVelocityValidator;
 
-    QTextEdit* xAreaEdit;
-    QTextEdit* yAreaEdit;
-    QTextEdit* zAreaEdit;
-    QTextEdit* fAreaEdit;
-    QTextEdit* blankAreaEdit;
+    QDoubleValidator fLengthValidator;
+    QIntValidator fScaleValidator;
+    QIntValidator fVelocityScaleValidator;
+    QDoubleValidator fMaxVelocityValidator;
+
 public slots:
     void readSettings();
     void writeSettings();
     void closeAndWriteSettings();
     void closeAndReadSettings();
+
+private slots:
+    void buttonClicked(QAbstractButton* button);
+
 
 };
 #endif // OPTIONSWIDGET_H

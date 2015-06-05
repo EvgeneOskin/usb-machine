@@ -1,3 +1,5 @@
+CONFIG += c++11
+
 SRC_DIR = $$PWD
 
 INCLUDEPATH += $$PWD/src

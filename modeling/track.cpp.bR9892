@@ -1,15 +1,17 @@
 #include "track.h"
 #include <iostream>
 #include <iomanip>
-#include "interpolation/gsl_spline.h"
+#include "gsl/gsl_spline.h"
 
 
-TYPE_VECTOR(double) maxVelocity = {1.0, 1.0, 1.0, 1.0};
+TYPE_VECTOR(double) maxVelocity = {1.0; 1.0; 1.0; 1.0};
 
 Track::Track(lines_t* lines, QString projection, Qwt3D::SurfacePlot& pw)
     : Qwt3D::ParametricSurface(pw),
       AbstractTrack(lines, "xyzf", maxVelocity) {
+    this->line = lines;
     setProjection(projection);
+    totalTimeSeconds = calculateAllWorkTime();
 }
 
 Track::~Track() {
@@ -26,19 +28,13 @@ Qwt3D::Triple Track::operator() (double u, double /*v*/) {
          it != trackSegments.end();
          ++it) {
         if ((*it)->isTimeInSegment(u)) {
-            TYPE_VECTOR(gsl_spline_ptr) result;
-            (*it)->getGSLSplines(&result);
+            const gsl_spline *xSpline = (*it)->getXGSLSpline();
+            const gsl_spline *ySpline = (*it)->getYGSLSpline();
+            const gsl_spline *zSpline = (*it)->getZGSLSpline();
 
-            gsl_spline_ptr xSpline = NAME_GET_VECTOR_COORDINATE(gsl_spline_ptr)(
-                        &result, xName[0]);
-            gsl_spline_ptr ySpline = NAME_GET_VECTOR_COORDINATE(gsl_spline_ptr)(
-                        &result, yName[0]);
-            gsl_spline_ptr zSpline = NAME_GET_VECTOR_COORDINATE(gsl_spline_ptr)(
-                        &result, zName[0]);
-
-            x = gsl_spline_eval (xSpline, u, NULL);
             y = gsl_spline_eval (ySpline, u, NULL);
             z = gsl_spline_eval (zSpline, u, NULL);
+            x = gsl_spline_eval (xSpline, u, NULL);
 
             return Qwt3D::Triple(x, y, z);
         }
