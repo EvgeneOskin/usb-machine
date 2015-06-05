@@ -1,15 +1,12 @@
 #include "parserspline.h"
-#include <iostream>
 
 Spline::Spline() : mType(spline_cubic) {}
 Spline::Spline(e_spline type) : mType(type) {}
 
 Spline::~Spline() {
-  std::cout << "Called destructor\n";
   for (spline_nodes_t::iterator i = this->mNodes.begin();
        i != this->mNodes.end();
        ++i) {
-    std::cout << "Destroy " << (*i)->first;
     delete *i;
   }
 }

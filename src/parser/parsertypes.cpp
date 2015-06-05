@@ -1,4 +1,3 @@
-#include <iostream>
 #include "stdlib.h"
 #include <string>
 
@@ -62,7 +61,6 @@ Spline* Parser::getSpline(std::string key, char *error) {
        i != current_splines->end();
        ++i) {
     if (i->first.compare(key) == 0){
-      std::cout << "get spline" << "\n";
       return i->second.get_spline();
     }
   }
