@@ -41,7 +41,13 @@ double safullyGetCoor(line_t *line, std::string coor, double *def) {
     double c = *def;
     line_t::iterator point_x = line->find(coor);
     if (point_x != line->end()) {
-        c = point_x->second.get_number();
+        if (point_x->second.getType() == value_types_number) {
+            c = point_x->second.get_number();
+        } else {
+            spline_nodes_t::iterator it = point_x->second.get_spline()->get_nodes().end();
+            it--;
+            c = (*it)->second;
+        }
         *def = c;
     }
     return c;

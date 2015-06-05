@@ -3,7 +3,6 @@
 #define YY_TYPEDEF_YY_SCANNER_T
 
 #include "math.h"
-#include <iostream>
 #include "stdio.h"
 #include "parser/parsertypes.h"
 #include "parser/ast.h"
@@ -115,17 +114,11 @@ input:
  }
 ;
 
-code_exp: code_exp EOL new_spline {
-    parser->newSpline($3);
-}
-| code_exp EOL line {
+code_exp: code_exp EOL line {
   $$ = parser->add2Lines($3);
 }
 | code_exp EOL loop
 | code_exp EOL
-| new_spline {
-    parser->newSpline($1);
-}
 | line {
   $$ = parser->add2Lines($1);
 }
@@ -179,6 +172,14 @@ ast_exp: VARS EQU IB_exp {
 line: line SPLITTER exp {
     $$ = parser->add2Line($1, $3);
 }
+| line SPLITTER new_spline{
+    parser->newSpline($3);
+    $$ = $1;
+}
+| new_spline {
+    parser->newSpline($1);
+    $$ = new line_t();
+}
 | exp {
     $$ = parser->newLine($1);
 };
@@ -187,7 +188,7 @@ new_spline: VARS EQU spline {
     $$ = new variable(*$1, $3);
 };
 
-spline: OP spline_nodes CP { $$ = $2; std::cout << "NEW ";};
+spline: OP spline_nodes CP { $$ = $2; };
 
 spline_nodes: IB_exp SPLITTER IB_exp {
     char error = 0;

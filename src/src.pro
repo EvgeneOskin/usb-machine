@@ -23,7 +23,6 @@ HEADERS = mainwindow.h \
     mainwidget.h \
     customedittext.h \
     codehighlighter.h \
-    compilator.h \
     highlightrule.h \
     instrumentwidget.h \
     searchwidget.h \
@@ -67,13 +66,13 @@ HEADERS = mainwindow.h \
     parser/parser_value.h \
     modeling/abstracttrack.h \
     modeling/modelingvectortypes.h \
-    modeling/tracksegment4d.h
+    modeling/tracksegment4d.h \
+    parser/compilator.h
 
 SOURCES = mainwindow.cpp \
     mainwidget.cpp \
     customedittext.cpp \
     codehighlighter.cpp \
-    compilator.cpp \
     highlightrule.cpp \
     instrumentwidget.cpp \
     searchwidget.cpp \
@@ -107,7 +106,8 @@ SOURCES = mainwindow.cpp \
     widgets/manualcontrol.cpp \
     modeling/abstracttrack.cpp \
     modeling/modelingvectortypes.cpp \
-    modeling/tracksegment4d.cpp
+    modeling/tracksegment4d.cpp \
+    parser/compilator.cpp
 
 
 #QMAKE_CXXFLAGS_RELEASE += -O3

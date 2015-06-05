@@ -8,7 +8,7 @@
 #include "widgets/manualcontrol.h"
 #include "codehighlighter.h"
 #include "searchwidget.h"
-#include "compilator.h"
+#include "parser/compilator.h"
 #include "modeling/modeling.h"
 #include "usb/connection.h"
 #include "usb/trackdataformatter.h"
