@@ -149,4 +149,4 @@ LIBS += -L$${SRC_DIR}/opencascade-6.8.0-build/out/lib \
     -lTKG2d \
     -lTKMath \
     -lTKernel \
-    -lTKOffset \
+    -lTKOffset
