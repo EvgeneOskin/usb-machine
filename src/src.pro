@@ -2,22 +2,23 @@ include(../defaults.pri)
 
 TEMPLATE = lib
 TARGET = usb_machine
-CONFIG += qt warn_on opengl
-QT += widgets core opengl
-
+CONFIG += qt warn_on opengl gui
+QT += core opengl
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 DESTDIR = ../lib
 
 CONFIG += lex
 QMAKE_LEX = flex
 LEXSOURCES += parser/flex.l
-lex.CONFIG += target_predeps
+
 
 CONFIG += yacc
 QMAKE_YACC = bison
 YACCSOURCES += parser/grammar.yy
-yacc_impl.CONFIG += target_predeps
-yacc_decl.CONFIG += target_predeps
+QMAKE_YACC_HEADER = grammar.tab.h
+QMAKE_YACC_SOURCE = grammar.tab.c
+QMAKE_YACCFLAGS_MANGLE  += -p $base -b $base
 
 HEADERS = mainwindow.h \
     mainwidget.h \
@@ -121,10 +122,10 @@ win32 {
 } else {
     LIBS += -lusb-1.0
     LIBS += -lfl
-    LIBS += -lopengl
+    LIBS += -lGL -lGLU -lglut -lGLEW
 }
 
-LIBS += -L../lib/ -lqwtplot3d
+LIBS += -L ../lib -lqwtplot3d
 
 FORMS += \
     manualcontrol.ui \

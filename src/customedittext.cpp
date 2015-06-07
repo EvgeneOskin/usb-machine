@@ -1,5 +1,7 @@
 #include "customedittext.h"
-
+#include <QAction>
+#include <QPainter>
+#include <QTextBlock>
 
 CustomEditText::CustomEditText(QWidget * parent)
         : QPlainTextEdit(parent){

@@ -26,13 +26,13 @@ void TestCompiler::testSplines() {
     QVERIFY(!compilator.isErrorHappen());
 
     lines_t *lines = compilator.getLines ();
-    QCOMPARE(lines->size (), 3u);
+    QCOMPARE((unsigned long) lines->size (), 3lu);
 
     lines_t::iterator it = lines->begin ();
     Value valueX1 = (*it)->find(std::string("x"))->second;
     QVERIFY(valueX1.getType () == value_types_spline);
     spline_nodes_t nodesX1 = valueX1.get_spline()->get_nodes ();
-    QCOMPARE(nodesX1.size (), 3u);
+    QCOMPARE((unsigned long) nodesX1.size (), 3lu);
     spline_nodes_t::iterator itNodeX1 = nodesX1.begin ();
     QCOMPARE((*itNodeX1)->first, 0.0);
     QCOMPARE((*itNodeX1)->second, 0.0);
@@ -67,7 +67,7 @@ void TestCompiler::testSplines() {
     Value valueY3 = (*it)->find(std::string("y"))->second;
     QVERIFY(valueY3.getType () == value_types_spline);
     spline_nodes_t nodesY3 = valueY3.get_spline()->get_nodes ();
-    QCOMPARE(nodesY3.size (), 2u);
+    QCOMPARE((unsigned long) nodesY3.size (), 2lu);
     spline_nodes_t::iterator itNodeY3 = nodesY3.begin ();
     QCOMPARE((*itNodeY3)->first, 1.0);
     QCOMPARE((*itNodeY3)->second, 1.0);
@@ -98,7 +98,7 @@ void TestCompiler::testComments() {
     QVERIFY(!compilator.isErrorHappen());
 
     lines_t *lines = compilator.getLines ();
-    QCOMPARE(lines->size (), 2u);
+    QCOMPARE((unsigned long) lines->size (), 2lu);
 
     lines_t::iterator it = lines->begin ();
     Value valueX1 = (*it)->find(std::string("x"))->second;

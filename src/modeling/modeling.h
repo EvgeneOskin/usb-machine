@@ -1,10 +1,12 @@
 #ifndef MODELING_H
 #define MODELING_H
 
-#include <QtWidgets>
 #include "widgets/plotwidget.h"
 #include "parser/parsertypes.h"
 #include "track.h"
+#include <QHBoxLayout>
+#include <QPushButton>
+#include <QLineEdit>
 
 class ModelingWidget : public QWidget {
 

@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QSettings>
 #include <memory>
+#include <cstdint>
 
 #define DEFAULT_DIMMENSION 1.0
 

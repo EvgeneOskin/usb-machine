@@ -2,7 +2,7 @@
 #include "ui_options.h"
 
 OptionsWidget::OptionsWidget(QWidget *parent) :
-    QDialog(parent), ui(new Ui::OptionsDialog), options(new Options) {
+    QDialog(parent), options(new Options), ui(new Ui::OptionsDialog) {
 
     ui->setupUi(this);
 

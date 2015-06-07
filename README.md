@@ -1,6 +1,8 @@
 Usb machine
 ===========
 
+[![Build Status](https://travis-ci.org/EvgeneOskin/usb-machine.svg)](https://travis-ci.org/EvgeneOskin/usb-machine)
+
 Overview
 --------
 

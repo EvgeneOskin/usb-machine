@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>344</width>
-    <height>190</height>
+    <height>221</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -36,9 +36,6 @@
          <widget class="QLineEdit" name="coordinateXEdit">
           <property name="inputMask">
            <string/>
-          </property>
-          <property name="clearButtonEnabled">
-           <bool>false</bool>
           </property>
          </widget>
         </item>

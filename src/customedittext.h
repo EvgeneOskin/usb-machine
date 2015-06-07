@@ -6,7 +6,8 @@
 #ifndef CUSTOMEDITTEXT_H
 #define CUSTOMEDITTEXT_H
 
-#include <QtWidgets>
+#include <QPlainTextEdit>
+#include <QWidget>
 
 class CustomEditText : public QPlainTextEdit {
     Q_OBJECT

@@ -1,8 +1,11 @@
 #ifndef MAINWIDGET_H
 #define MAINWIDGET_H
 
-#include "QtWidgets"
 #include "QRegExp"
+#include <QVBoxLayout>
+#include <QTabWidget>
+#include <QSplitter>
+#include <QTableWidget>
 #include "customedittext.h"
 #include "parser/parsertypes.h"
 

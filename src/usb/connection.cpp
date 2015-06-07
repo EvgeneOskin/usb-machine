@@ -196,7 +196,6 @@ void UsbConnection::print_info() {
     qDebug("SerialNumber Description: %s|\n", data);
 
     qDebug("\nbegin descriptor\n");
-    qDebug("\tport: %d\n", libusb_get_port_number(device));
     qDebug("\tbus_num: %d\n", libusb_get_bus_number(device));
     qDebug("\taddress: %d\n", libusb_get_device_address(device));
     qDebug("\tspeed: %d\n", libusb_get_device_speed(device));

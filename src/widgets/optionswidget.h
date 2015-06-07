@@ -1,8 +1,11 @@
 #ifndef OPTIONSWIDGET_H
 #define OPTIONSWIDGET_H
 
-#include <QtWidgets>
 #include <memory>
+#include <QDialog>
+#include <QDoubleValidator>
+#include <QIntValidator>
+#include <QAbstractButton>
 #include "options.h"
 
 namespace Ui {
