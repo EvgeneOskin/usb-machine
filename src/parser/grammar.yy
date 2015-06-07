@@ -115,7 +115,7 @@ input:
 ;
 
 code_exp: code_exp EOL line {
-  $$ = parser->add2Lines($3);
+$$ = parser->add2Lines($3);
 }
 | code_exp EOL loop
 | code_exp EOL
@@ -152,7 +152,7 @@ loop: MULT INTEGER EOL ast_lines MULT {
 };
 
 ast_lines: ast_lines ast_line EOL {
-    $$ = add_to_ast_lines($2, $1);
+$$ = add_to_ast_lines($2, $1);
 }
 | ast_line EOL {
     $$ = new_ast_lines($1);

@@ -76,3 +76,45 @@ void TestCompiler::testSplines() {
     QCOMPARE((*itNodeY3)->first, 20.0);
     QCOMPARE((*itNodeY3)->second, -1.0);
 }
+
+
+void TestCompiler::testComments() {
+    const char *filename = "test.dat";
+    std::ofstream output(filename);
+
+    output << "x=2/2*exp(0) y = 0    ;; comment 1\n"
+              "*1 ;; loop\n"
+              "x = 23 ; comment 213\n"
+              "*\n"
+              ;
+
+    output.close();
+
+    Compilator compilator(filename);
+    compilator.compile ();
+    connect(&compilator, SIGNAL(parserError(QString)), this, SLOT(parserError(QString)));
+
+
+    QVERIFY(!compilator.isErrorHappen());
+
+    lines_t *lines = compilator.getLines ();
+    QCOMPARE(lines->size (), 2u);
+
+    lines_t::iterator it = lines->begin ();
+    Value valueX1 = (*it)->find(std::string("x"))->second;
+    QVERIFY(valueX1.getType () == value_types_number);
+    QCOMPARE(valueX1.get_number (), 1.0);
+
+    Value valueY1 = (*it)->find(std::string("y"))->second;
+    QVERIFY(valueY1.getType () == value_types_number);
+    QCOMPARE(valueY1.get_number (), 0.0);
+    it++;
+
+    Value valueX2 = (*it)->find(std::string("x"))->second;
+    QVERIFY(valueX2.getType () == value_types_number);
+    QCOMPARE(valueX2.get_number(), 23.0);
+
+    Value valueY2 = (*it)->find(std::string("y"))->second;
+    QVERIFY(valueY2.getType () == value_types_number);
+    QCOMPARE(valueY2.get_number(), 0.0);
+}

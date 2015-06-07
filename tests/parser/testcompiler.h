@@ -10,6 +10,7 @@ class TestCompiler : public QObject {
 private slots:
     void parserError(QString str);
     void testSplines();
+    void testComments();
 };
 
 #endif // TESTCOMPILER_H

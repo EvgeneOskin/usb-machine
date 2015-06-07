@@ -1,6 +1,6 @@
 %{
-
 #include "grammar_yacc.h"
+#include <QObject>
 #include <string>
 
 #undef YY_DECL
@@ -45,6 +45,11 @@
   yylval->number = 2.718282;
   return NUMBER;
 }
+
+([ \t]*(";".*)?(\r)?\n)+ {
+  return EOL;
+}
+
 
 [ \t]*"+"[ \t]*  {
   return PLUS;
@@ -149,10 +154,6 @@
 ([a-zA-Z][a-zA-Z0-9]*) {
   yylval->key = new std::string(yytext);
   return VARS;
-}
-
- ([ \t]*\r\n|[ \t]*\n)+ {
-  return EOL;
 }
 
 [ \t]+ {
