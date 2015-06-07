@@ -14,8 +14,8 @@
 #endif // YY_TYPEDEF_YY_SCANNER_T
 }
 
-%output  "y.tab.c"
-%defines "y.tab.h"
+%output  "grammar.tab.c"
+%defines "grammar.tab.h"
 
 %error-verbose
 %define api.pure

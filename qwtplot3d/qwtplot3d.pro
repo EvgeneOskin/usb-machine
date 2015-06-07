@@ -93,3 +93,5 @@ zlib {
   win32:LIBS += zlib.lib
 	unix:LIBS  += -lz
 }
+
+unix:LIBS += -lGL -lGLU -lglut -lGLEW

@@ -1,6 +1,14 @@
 #include "mainwindow.h"
+#include <QStatusBar>
+#include <QFileDialog>
+#include <QMessageBox>
+#include <QMenuBar>
+#include <QTextStream>
+#include <QApplication>
+
 #include "options.h"
 #include "usb/connection.h"
+
 
 MainWindow::MainWindow() {
     mainWidget = new MainWidget(this);

@@ -2,6 +2,9 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QAction>
+#include <QToolBar>
+#include <QMenu>
 #include "mainwidget.h"
 #include "customedittext.h"
 #include "widgets/optionswidget.h"

@@ -26,6 +26,7 @@ signals:
 private:
     FILE* inputFile = NULL;
     bool errorHappen;
+    void closeFile();
 };
 
 #endif // COMPILATOR_H

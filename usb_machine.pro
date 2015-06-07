@@ -11,3 +11,4 @@ tests.depends = src
 
 DISTFILES += \
     defaults.pri
+

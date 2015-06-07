@@ -1,4 +1,5 @@
 #include "trackmodelingwrapper.h"
+#include <cstring>
 
 double get_last_time_value(gsl_spline_ptr spline) {
     return spline->x[spline->size - 1];

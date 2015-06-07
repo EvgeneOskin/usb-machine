@@ -11,8 +11,13 @@ Compilator::Compilator(const char* filename) : QObject(), Parser() {
 
 Compilator::~Compilator() {
     if (inputFile != NULL){
-        fclose(inputFile);
+        closeFile();
     }
+}
+
+void Compilator::closeFile() {
+    fclose(inputFile);
+    inputFile = NULL;
 }
 
 void Compilator::compile() {
@@ -24,7 +29,7 @@ void Compilator::compile() {
     errorHappen = false;
     flexrestart(inputFile);
     grammarparse(this);
-    fclose(inputFile);
+    closeFile();
 }
 
 int Compilator::handleError(const char *msg,

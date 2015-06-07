@@ -3,8 +3,10 @@
 
 #include <QWidget>
 #include <QPushButton>
-#include <QtWidgets>
 #include <QLineEdit>
+#include <QLabel>
+#include <QHBoxLayout>
+#include <QBoxLayout>
 
 
 class SearchWidget : public QWidget

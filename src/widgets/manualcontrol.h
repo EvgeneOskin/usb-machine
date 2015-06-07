@@ -1,8 +1,10 @@
 #ifndef MANUALCONTROL_H
 #define MANUALCONTROL_H
 
-#include <QtWidgets>
 #include <memory>
+#include <QDoubleValidator>
+#include <QDialog>
+#include <QAbstractButton>
 
 namespace Ui {
     class ManualControl;

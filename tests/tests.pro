@@ -18,13 +18,18 @@ SOURCES += main.cpp \
 
 HEADERS += \
     testoptions.h \
-    testtrackdataformatter.h \
     usb/testtrackdataformatter.h \
     parser/testcompiler.h
 
 #QMAKE_CXXFLAGS_RELEASE += -O3
 
-LIBS += -L../lib -lusb_machine
+LIBS += -L../lib -lusb_machine -lqwtplot3d
+
+win32 {
+    LIBS += -L$${SRC_DIR}/static/lib/ -lusb-1.0
+} else {
+    LIBS += -lusb-1.0
+}
 
 
 

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>410</width>
-    <height>680</height>
+    <width>486</width>
+    <height>807</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -354,9 +354,6 @@
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="toolTipDuration">
-      <number>2</number>
-     </property>
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
      </property>
