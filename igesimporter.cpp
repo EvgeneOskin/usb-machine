@@ -24,25 +24,33 @@ void IGESImporter::iterateWires() {
         reader.TransferList(list);
 
         TopoDS_Shape shape = reader.OneShape();
-        TopExp_Explorer explorer;
+        TopExp_Explorer wireExplorer;
+        TopExp_Explorer edgeExplorer;
+        wireExplorer.Init (shape, TopAbs_WIRE);
+//        wireExplorer.Next ();
 
         int i = 0;
-        for (explorer.Init (shape, TopAbs_EDGE);
-             explorer.More();
-             explorer.Next ()) {
-            Standard_Boolean isDegenerated = BRep_Tool::Degenerated ((const TopoDS_Edge&)explorer.Current ());
-            Standard_Boolean isGeometric = BRep_Tool::IsGeometric ((const TopoDS_Edge&) explorer.Current ());
-            Standard_Boolean isClosed = BRep_Tool::IsClosed (explorer.Current ());
-
+        for (edgeExplorer.Init (wireExplorer.Current(), TopAbs_EDGE);
+             edgeExplorer.More();
+             edgeExplorer.Next ()) {
             double start = 0.0, end = 1.0;
+//            double previousX = 0, previousY = 0;
             Handle(Geom_Curve) curve = BRep_Tool::Curve (
-                        (const TopoDS_Edge&) explorer.Current (), start, end);
+                        (const TopoDS_Edge&) edgeExplorer.Current (), start, end);
             if (!curve.IsNull ()) {
                 for (double d = start; d < end; d += (end - start)*0.1) {
                     gp_Pnt point = curve->Value (d);
                     double x = point.X();
                     double y = point.Y();
                     double z = point.Z();
+//                    if (d == start) {
+//                        previousX = x;
+//                        previousY = y;
+//                    } else {
+//                        if (previousX == x || previousY == y) {
+//                            break;
+//                        }
+//                    }
                     output << "x="<< x << " y=" << y << " z="<< z << '\n';
                 }
             }
