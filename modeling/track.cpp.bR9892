@@ -1,0 +1,63 @@
+#include "track.h"
+#include <iostream>
+#include <iomanip>
+#include "gsl/gsl_spline.h"
+
+
+TYPE_VECTOR(double) maxVelocity = {1.0; 1.0; 1.0; 1.0};
+
+Track::Track(lines_t* lines, QString projection, Qwt3D::SurfacePlot& pw)
+    : Qwt3D::ParametricSurface(pw),
+      AbstractTrack(lines, "xyzf", maxVelocity) {
+    this->line = lines;
+    setProjection(projection);
+    totalTimeSeconds = calculateAllWorkTime();
+}
+
+Track::~Track() {
+    for (std::vector<TrackSegment4D*>::iterator it = trackSegments.begin();
+         it != trackSegments.end();
+         ++it) {
+        delete *it;
+    }
+}
+
+
+Qwt3D::Triple Track::operator() (double u, double /*v*/) {
+    for (std::vector<TrackSegment4D*>::iterator it = trackSegments.begin();
+         it != trackSegments.end();
+         ++it) {
+        if ((*it)->isTimeInSegment(u)) {
+            const gsl_spline *xSpline = (*it)->getXGSLSpline();
+            const gsl_spline *ySpline = (*it)->getYGSLSpline();
+            const gsl_spline *zSpline = (*it)->getZGSLSpline();
+
+            y = gsl_spline_eval (ySpline, u, NULL);
+            z = gsl_spline_eval (zSpline, u, NULL);
+            x = gsl_spline_eval (xSpline, u, NULL);
+
+            return Qwt3D::Triple(x, y, z);
+        }
+    }
+    return Qwt3D::Triple(x, y, z);
+}
+
+
+void Track::setProjection(QString projection) {
+    std::string std_proj = projection.toStdString();
+    xName = std_proj.substr(0, 1);
+    yName = std_proj.substr(1, 1);
+    zName = std_proj.substr(2, 1);
+}
+
+std::string Track::getXName() {
+    return xName;
+}
+
+std::string Track::getYName() {
+    return yName;
+}
+
+std::string Track::getZName() {
+    return zName;
+}

@@ -7,4 +7,5 @@
 *.LIB
 *.bak
 *.BAK
-*.*~
+*~
+*.pro.user
